@@ -655,7 +655,7 @@ case 11: // Prompt user to decide next action
     joint_angle.push_back( -0.015);
     joint_angle.push_back( -0.100);
     joint_angle.push_back( 0.779);
-    joint_angle.push_back( 1.759);gle, 0.1);
+     setJointSpacePath(joint_name_, joint_angle, 1);
     demo_count_++;
     break;
 
