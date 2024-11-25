@@ -713,7 +713,7 @@ bool OpenManipulatorPickandPlace::kbhit()
 int main(int argc, char **argv)
 {
   // Init ROS node
-  ros::init(argc, argv, "open_manipulator_pick_and_place");
+  ros::init(argc, argv, "open_manipulator_final");
   ros::NodeHandle node_handle("");
 
   OpenManipulatorPickandPlace open_manipulator_pick_and_place;
