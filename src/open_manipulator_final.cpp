@@ -1,4 +1,31 @@
-﻿#include "open_manipulator_final/open_manipulator_final.h"
+﻿/**
+ * OpenManipulator Final Demo Code
+ * Author: 송영빈 (GitHub: https://github.com/songyb111-gachon)
+ * Description: This code is developed for the final demonstration of
+ *              OpenManipulator Pick and Place functionality with AR marker tracking.
+ * Date: [2024-11-23 ~ 2024-11-26]
+ *
+ * Note: This code is part of the Drones and Robotics team project under the supervision
+ *       of Prof. Andrew Jaeyong Choi at Gachon University.
+ *
+ * Repository: https://github.com/songyb111-gachon/open_manipulator_final
+ *
+ * Instructions:
+ * - This project demonstrates the use of AR marker-based robotic arm manipulation.
+ * - It includes picking and placing tasks using AR markers identified in a 3D space.
+ * - The code integrates with ROS to control OpenManipulator hardware and process sensor data.
+ *
+ * Usage:
+ * 1. Clone the repository: `git clone https://github.com/songyb111-gachon/open_manipulator_final`
+ * 2. Build the project: catkin build
+ * 3. Run the node: `rosrun open_manipulator_final open_manipulator_final`.
+ *
+ * Disclaimer:
+ * This code is for educational purposes as part of the team project. Use it with caution in real-world environments.
+ */
+
+
+#include "open_manipulator_final/open_manipulator_final.h"
 
 #define INPUT_WAIT_TIME 1  // 두 번째 입력 대기 시간 (초)
 
@@ -802,7 +829,6 @@ case 11: // Prompt user to decide next action
 }
 
 
-
 void OpenManipulatorPickandPlace::printText()
 {
     system("clear");
@@ -905,6 +931,7 @@ if (mode_state_ == DEMO_START)
     {
         printf("[INFO] Demo Stopped.\n");
     }
+
     else if (mode_state_ == HOME_POSE)
     {
         printf("[INFO] Moving to Home Pose...\n");
@@ -916,6 +943,7 @@ if (mode_state_ == DEMO_START)
            present_joint_angle_.at(1),
            present_joint_angle_.at(2),
            present_joint_angle_.at(3));
+
     printf("Present Tool Position: %.3lf\n", present_joint_angle_.at(4));
     printf("Present Kinematics Position X: %.3lf Y: %.3lf Z: %.3lf\n",
            present_kinematic_position_.at(0),
@@ -934,6 +962,7 @@ if (mode_state_ == DEMO_START)
                    marker.position[2]);
         }
     }
+
     else
     {
         printf("[INFO] No AR Markers Detected. Waiting for Input...\n");
@@ -949,8 +978,6 @@ if (mode_state_ == DEMO_START)
     }
 
 }
-
-
 
 
 bool OpenManipulatorPickandPlace::kbhit()
