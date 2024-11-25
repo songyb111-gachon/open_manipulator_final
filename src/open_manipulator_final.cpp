@@ -359,7 +359,7 @@ void OpenManipulatorPickandPlace::demoSequence()
 
             // 위치 조정
             std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
-            setTaskSpacePath(joint_name_, search_joint_angle, 2.0);
+            setJointSpacePath(joint_name_, search_joint_angle, 2.0);
             ros::Duration(3.0).sleep();
             search_attempts++;
         }
