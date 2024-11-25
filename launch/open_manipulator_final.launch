@@ -1,0 +1,3 @@
+<launch>
+  <node name="open_manipulator_final" pkg="open_manipulator_final" type="open_manipulator_final" output="screen"/>
+</launch>
