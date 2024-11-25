@@ -4,6 +4,7 @@
 #include <ros/ros.h>
 #include <termios.h>
 #include <sys/ioctl.h>
+#include <sstream>
 
 #include "open_manipulator_msgs/OpenManipulatorState.h"
 #include "open_manipulator_msgs/KinematicsPose.h"
@@ -44,6 +45,7 @@ class OpenManipulatorPickandPlace
   std::vector<std::string> joint_name_;
   bool open_manipulator_is_moving_;
   std::vector<ArMarker> ar_marker_pose;
+  std::ostringstream output_buffer_;
 
   uint8_t mode_state_;
   uint8_t demo_count_;
