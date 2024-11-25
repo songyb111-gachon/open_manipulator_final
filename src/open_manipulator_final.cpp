@@ -270,6 +270,10 @@ void OpenManipulatorPickandPlace::demoSequence()
     joint_angle.push_back( 0.35);
     joint_angle.push_back( 0.70);
     setJointSpacePath(joint_name_, joint_angle, 2.0);
+    output_buffer_.str("");
+    output_buffer_.clear();
+    output_buffer_ << "[INFO] Starting demo\n ";
+    std::cout << output_buffer_.str() << std::flush; // 즉시 출력
     demo_count_ ++;
     break;
 
