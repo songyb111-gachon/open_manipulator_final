@@ -389,6 +389,9 @@ case 4: // pick the box 사용자가 입력한 번호의 마커를 집음
         {
             for (size_t i = 0; i < ar_marker_pose.size(); i++)
             {
+                std::cout << "[DEBUG] Searching for Marker ID: " << pick_marker_id_
+                          << ", Current Marker ID: " << ar_marker_pose.at(i).id << std::endl;
+
                 if (ar_marker_pose.at(i).id == pick_marker_id_)
                 {
                     marker_found = true;
@@ -426,6 +429,7 @@ case 4: // pick the box 사용자가 입력한 번호의 마커를 집음
             }
 
             ros::Duration(0.1).sleep(); // 100ms 대기 후 다시 감지 시도
+            ros::spinOnce(); // 콜백 강제 실행
         }
 
         if (marker_found)
@@ -464,7 +468,6 @@ case 4: // pick the box 사용자가 입력한 번호의 마커를 집음
 }
 
 
-
   case 5: // wait & grip
     setJointSpacePath(joint_name_, present_joint_angle_, 1.0);
     gripper_value.clear();
@@ -499,15 +502,17 @@ case 7: // Request Place Marker ID
     char second_input = '\0';
     int marker_id = -1; // 초기화된 ID 값
 
-    while (true) // 유효한 입력을 받을 때까지 반복
+    while (ros::ok()) // ROS가 실행 중일 때만 반복
     {
         if (kbhit()) // 키 입력 대기
         {
             first_input = std::getchar(); // 첫 번째 입력
             if (isdigit(first_input)) // 첫 번째 입력이 숫자인지 확인
             {
-                clock_t start_time = clock(); // 두 번째 입력 대기 시간 측정
-                while ((clock() - start_time) / CLOCKS_PER_SEC < INPUT_WAIT_TIME)
+                ros::Time start_time = ros::Time::now(); // 두 번째 입력 대기 시간 측정
+                ros::Duration wait_duration(INPUT_WAIT_TIME);
+
+                while (ros::Time::now() - start_time < wait_duration)
                 {
                     if (kbhit()) // 두 번째 입력 대기
                     {
@@ -518,7 +523,10 @@ case 7: // Request Place Marker ID
                             break;
                         }
                     }
+                    ros::spinOnce(); // ROS 콜백 처리
+                    ros::Duration(0.1).sleep(); // 100ms 대기
                 }
+
                 if (second_input == '\0') // 두 번째 입력이 없으면 한 글자만 사용
                 {
                     marker_id = first_input - '0';
@@ -529,7 +537,7 @@ case 7: // Request Place Marker ID
                     // 버퍼 초기화 후 메시지 작성
                     output_buffer_.str(""); // 버퍼 내용 비우기
                     output_buffer_.clear();
-                    place_marker_id_ = marker_id;  // 수정된 부분: pick_marker_id_ -> place_marker_id_
+                    place_marker_id_ = marker_id; // Place Marker ID 설정
                     output_buffer_ << "[INFO] Place Marker ID set to: " << place_marker_id_ << "\n";
                     std::cout << output_buffer_.str() << std::flush; // 즉시 출력
                     demo_count_++; // 다음 단계로 이동
@@ -553,7 +561,8 @@ case 7: // Request Place Marker ID
                 std::cout << output_buffer_.str() << std::flush; // 즉시 출력
             }
         }
-        ros::Duration(0.1).sleep(); // ROS 노드가 응답을 유지하도록 100ms 대기
+        ros::spinOnce(); // ROS 콜백 처리
+        ros::Duration(0.1).sleep(); // 100ms 대기
     }
     break;
 }
