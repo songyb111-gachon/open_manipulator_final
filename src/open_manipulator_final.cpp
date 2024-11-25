@@ -37,8 +37,8 @@ OpenManipulatorPickandPlace::OpenManipulatorPickandPlace()
       mode_state_(0),
       demo_count_(0),
       pick_ar_id_(0),
-      pick_marker_id_(-1),   // 초기값: 유효하지 않은 ID
-      place_marker_id_(-1)   // 초기값: 유효하지 않은 ID
+      pick_marker_id_(0),   // 초기값:
+      place_marker_id_(0)   // 초기값:
 {
     present_joint_angle_.resize(NUM_OF_JOINT_AND_TOOL, 0.0);
     present_kinematic_position_.resize(3, 0.0);
