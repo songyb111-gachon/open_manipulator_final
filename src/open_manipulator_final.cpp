@@ -259,61 +259,74 @@ void OpenManipulatorPickandPlace::demoSequence()
     demo_count_ ++;
     break;
 
-    case 3: // pick the box 사용자가 입력한 번호의 마커를 집음
+case 3: // pick the box 사용자가 입력한 번호의 마커를 집음
 {
-  bool marker_found = false;
-  int search_attempts = 0; // 검색 시도 횟수
-
-  while (!marker_found && search_attempts < 8) // 최대 8번 시도
-  {
-    for (int i = 0; i < ar_marker_pose.size(); i++)
+    printf("\n[INFO] Enter Pick Marker ID (0-17): ");
+    while (true) // 유효한 입력을 받을 때까지 반복
     {
-      if (ar_marker_pose.at(i).id == pick_marker_id_) // 사용자가 설정한 pick_marker_id_
-      {
-        marker_found = true;
+        if (kbhit()) // 키 입력 대기
+        {
+            char input = std::getchar();
+            if (isdigit(input))
+            {
+                pick_marker_id_ = input - '0';
+                if (pick_marker_id_ >= 0 && pick_marker_id_ <= 17) // 유효한 범위 확인
+                {
+                    printf("[INFO] Pick Marker ID set to: %d\n", pick_marker_id_);
+                    break;
+                }
+            }
+            printf("[WARNING] Invalid input. Please enter a number between 0 and 17.\n");
+        }
+        ros::Duration(0.1).sleep(); // ROS 노드가 응답을 유지하도록 100ms 대기
+    }
 
-        // X, Y, Z 값 설정
-        kinematics_position.push_back(ar_marker_pose.at(i).position[0] + 0.005); // X 좌표
-        kinematics_position.push_back(ar_marker_pose.at(i).position[1]);        // Y 좌표
-        kinematics_position.push_back(0.033);                                  // Z 좌표 고정
+    // 기존 마커 탐색 및 수행 로직
+    bool marker_found = false;
+    int search_attempts = 0;
 
-        // 오리엔테이션 설정
-        kinematics_orientation.push_back(0.74); // w 값
-        kinematics_orientation.push_back(0.00); // x 값
-        kinematics_orientation.push_back(0.66); // y 값
-        kinematics_orientation.push_back(0.00); // z 값
+    while (!marker_found && search_attempts < 8) // 최대 8번 시도
+    {
+        for (int i = 0; i < ar_marker_pose.size(); i++)
+        {
+            if (ar_marker_pose.at(i).id == pick_marker_id_)
+            {
+                marker_found = true;
 
-        setTaskSpacePath(kinematics_position, kinematics_orientation, 3.0);
-        demo_count_++; // 다음 단계로 진행
-        break;
-      }
+                kinematics_position.push_back(ar_marker_pose.at(i).position[0] + 0.005);
+                kinematics_position.push_back(ar_marker_pose.at(i).position[1]);
+                kinematics_position.push_back(0.033);
+
+                kinematics_orientation.push_back(0.74);
+                kinematics_orientation.push_back(0.00);
+                kinematics_orientation.push_back(0.66);
+                kinematics_orientation.push_back(0.00);
+
+                setTaskSpacePath(kinematics_position, kinematics_orientation, 3.0);
+                demo_count_++;
+                break;
+            }
+        }
+
+        if (!marker_found)
+        {
+            printf("Pick Marker ID %d not detected. Adjusting base joint... (Attempt %d)\n", pick_marker_id_, search_attempts + 1);
+
+            std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
+            setJointSpacePath(joint_name_, search_joint_angle, 2.0);
+            ros::Duration(3.0).sleep();
+            search_attempts++;
+        }
     }
 
     if (!marker_found)
     {
-      // 마커를 찾지 못했을 경우 Base joint 변경
-      printf("Pick Marker ID %d not detected. Adjusting base joint... (Attempt %d)\n", pick_marker_id_, search_attempts + 1);
-
-      // Base joint (joint1) 값을 회전하며 탐색
-      std::vector<double> search_joint_angle;
-      search_joint_angle.push_back(-1.60 + 0.4 * search_attempts); // Base joint 좌우로 회전
-      search_joint_angle.push_back(-0.80);                        // Shoulder joint
-      search_joint_angle.push_back(0.00);                         // Elbow joint
-      search_joint_angle.push_back(1.90);                         // Wrist joint
-      setJointSpacePath(joint_name_, search_joint_angle, 2.0);   // 카메라 위치 조정
-
-      ros::Duration(3.0).sleep(); // 3초 대기
-      search_attempts++;          // 시도 횟수 증가
+        printf("Pick Marker ID %d could not be found after multiple attempts.\n", pick_marker_id_);
+        demo_count_ = 1; // 초기 단계로 돌아감
     }
-  }
-
-  if (!marker_found) // 최대 시도 후에도 찾지 못했을 경우
-  {
-    printf("Pick Marker ID %d could not be found after multiple attempts.\n", pick_marker_id_);
-    demo_count_ = 1; // 초기 단계로 돌아감
-  }
 }
 break;
+
 
 
   case 4: // wait & grip
@@ -334,59 +347,71 @@ break;
     demo_count_++;
     break;
 
-    case 6: // place the box 사용자가 입력한 마커가 있는 곳에 놓음
+case 6: // place the box 사용자가 입력한 마커가 있는 곳에 놓음
 {
-  bool marker_found = false;
-  int search_attempts = 0; // 검색 시도 횟수
-
-  while (!marker_found && search_attempts < 8) // 최대 8번 시도
-  {
-    for (int i = 0; i < ar_marker_pose.size(); i++)
+    printf("\n[INFO] Enter Place Marker ID (0-17): ");
+    while (true) // 유효한 입력을 받을 때까지 반복
     {
-      if (ar_marker_pose.at(i).id == place_marker_id_) // 사용자가 설정한 place_marker_id_
-      {
-        marker_found = true;
+        if (kbhit()) // 키 입력 대기
+        {
+            char input = std::getchar();
+            if (isdigit(input))
+            {
+                place_marker_id_ = input - '0';
+                if (place_marker_id_ >= 0 && place_marker_id_ <= 17) // 유효한 범위 확인
+                {
+                    printf("[INFO] Place Marker ID set to: %d\n", place_marker_id_);
+                    break;
+                }
+            }
+            printf("[WARNING] Invalid input. Please enter a number between 0 and 17.\n");
+        }
+        ros::Duration(0.1).sleep(); // ROS 노드가 응답을 유지하도록 100ms 대기
+    }
 
-        // X, Y, Z 값 설정
-        kinematics_position.push_back(ar_marker_pose.at(i).position[0] + 0.005); // X 좌표
-        kinematics_position.push_back(ar_marker_pose.at(i).position[1]);        // Y 좌표
-        kinematics_position.push_back(0.069);                                  // Z 좌표 고정
+    // 기존 마커 탐색 및 수행 로직 유지
+    bool marker_found = false;
+    int search_attempts = 0;
 
-        // 오리엔테이션 설정
-        kinematics_orientation.push_back(0.74); // w 값
-        kinematics_orientation.push_back(0.00); // x 값
-        kinematics_orientation.push_back(0.66); // y 값
-        kinematics_orientation.push_back(0.00); // z 값
+    while (!marker_found && search_attempts < 8) // 최대 8번 시도
+    {
+        for (int i = 0; i < ar_marker_pose.size(); i++)
+        {
+            if (ar_marker_pose.at(i).id == place_marker_id_)
+            {
+                marker_found = true;
 
-        setTaskSpacePath(kinematics_position, kinematics_orientation, 3.0);
-        demo_count_++; // 다음 단계로 진행
-        break;
-      }
+                kinematics_position.push_back(ar_marker_pose.at(i).position[0] + 0.005);
+                kinematics_position.push_back(ar_marker_pose.at(i).position[1]);
+                kinematics_position.push_back(0.069);
+
+                kinematics_orientation.push_back(0.74);
+                kinematics_orientation.push_back(0.00);
+                kinematics_orientation.push_back(0.66);
+                kinematics_orientation.push_back(0.00);
+
+                setTaskSpacePath(kinematics_position, kinematics_orientation, 3.0);
+                demo_count_++;
+                break;
+            }
+        }
+
+        if (!marker_found)
+        {
+            printf("Place Marker ID %d not detected. Adjusting base joint... (Attempt %d)\n", place_marker_id_, search_attempts + 1);
+
+            std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
+            setJointSpacePath(joint_name_, search_joint_angle, 2.0);
+            ros::Duration(3.0).sleep();
+            search_attempts++;
+        }
     }
 
     if (!marker_found)
     {
-      // 마커를 찾지 못했을 경우 Base joint 변경
-      printf("Place Marker ID %d not detected. Adjusting base joint... (Attempt %d)\n", place_marker_id_, search_attempts + 1);
-
-      // Base joint (joint1) 값을 회전하며 탐색
-      std::vector<double> search_joint_angle;
-      search_joint_angle.push_back(-1.60 + 0.4 * search_attempts); // Base joint 좌우로 회전
-      search_joint_angle.push_back(-0.80);                        // Shoulder joint
-      search_joint_angle.push_back(0.00);                         // Elbow joint
-      search_joint_angle.push_back(1.90);                         // Wrist joint
-      setJointSpacePath(joint_name_, search_joint_angle, 2.0);   // 카메라 위치 조정
-
-      ros::Duration(3.0).sleep(); // 1초 대기
-      search_attempts++;          // 시도 횟수 증가
+        printf("Place Marker ID %d could not be found after multiple attempts.\n", place_marker_id_);
+        demo_count_ = 6; // 놓기 단계로 돌아감
     }
-  }
-
-  if (!marker_found) // 최대 시도 후에도 찾지 못했을 경우
-  {
-    printf("Place Marker ID %d could not be found after multiple attempts.\n", place_marker_id_);
-    demo_count_ = 6; // 놓기 단계로 돌아감
-  }
 }
 break;
 
