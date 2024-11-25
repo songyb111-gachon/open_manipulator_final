@@ -653,7 +653,7 @@ case 7: // Request Place Marker ID
                 setTaskSpacePath(kinematics_position, kinematics_orientation, 3.0);
                 break;
             }
-	break;
+  break;
 
 
 case 11: // Prompt user to decide next action
