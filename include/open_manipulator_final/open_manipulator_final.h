@@ -106,8 +106,8 @@ class OpenManipulatorPickandPlace
   void setModeState(char ch);
   void demoSequence();
 
-  bool marker_found = false;
-  uint8_t search_attempts;
+  bool marker_found;
+  int search_attempts; //uint8로 바꿀 수 있으면 바꾸는 게 좋음
 
 
   void printText();
