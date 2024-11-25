@@ -631,22 +631,28 @@ case 7: // Request Place Marker ID
 
 
   case 10: // move up after place the box
-    kinematics_position.clear();
-    kinematics_orientation.clear();
+    if (ar_marker_pose.at(i).id == place_marker_id_)
+            {
+                marker_found = true;
 
+                // 위치 설정
+                kinematics_position.clear();
+                kinematics_orientation.clear();
 
-    kinematics_position.push_back(ar_marker_pose.at(place_marker_id_).position[0] + 0.030); // X 좌표
-    kinematics_position.push_back(ar_marker_pose.at(place_marker_id_).position[1] + 0.030);        // Y 좌표
-    kinematics_position.push_back(0.170);                                                 // Z 좌표 (상승)
+                kinematics_position.push_back(ar_marker_pose.at(i).position[0] + 0.005);
+                kinematics_position.push_back(ar_marker_pose.at(i).position[1]);
+                kinematics_position.push_back(0.111);
 
-    // 기존 오리엔테이션 유지
-    kinematics_orientation.push_back(0.74); // w 값
-    kinematics_orientation.push_back(0.00); // x 값
-    kinematics_orientation.push_back(0.66); // y 값
-    kinematics_orientation.push_back(0.00); // z 값
+                // 오리엔테이션 설정
+                kinematics_orientation.push_back(0.74);
+                kinematics_orientation.push_back(0.00);
+                kinematics_orientation.push_back(0.66);
+                kinematics_orientation.push_back(0.00);
 
-    setTaskSpacePath(kinematics_position, kinematics_orientation, 2.0); // 위치로 이동
-    demo_count_++;
+                // 작업 공간 경로 설정
+                setTaskSpacePath(kinematics_position, kinematics_orientation, 3.0);
+                break;
+            }
 	break;
 
 
