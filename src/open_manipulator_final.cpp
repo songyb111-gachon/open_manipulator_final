@@ -1,6 +1,6 @@
 ﻿#include "open_manipulator_final/open_manipulator_final.h"
 
-#define INPUT_WAIT_TIME 2  // 두 번째 입력 대기 시간 (초)
+#define INPUT_WAIT_TIME 1  // 두 번째 입력 대기 시간 (초)
 
 OpenManipulatorPickandPlace::OpenManipulatorPickandPlace()
     : node_handle_(""),
@@ -232,6 +232,7 @@ void OpenManipulatorPickandPlace::demoSequence()
   std::vector<double> kinematics_orientation;
   std::vector<double> gripper_value;
 
+
   switch (demo_count_)
   {
     case 0: // home pose
@@ -243,6 +244,7 @@ void OpenManipulatorPickandPlace::demoSequence()
     demo_count_ ++;
     break;
 
+
     case 1: // initial pose
       joint_angle.push_back( 0.01);
     joint_angle.push_back(-0.80);
@@ -252,12 +254,14 @@ void OpenManipulatorPickandPlace::demoSequence()
     demo_count_ ++;
     break;
 
+
     case 2: // wait & open the gripper
       setJointSpacePath(joint_name_, present_joint_angle_, 3.0);
     gripper_value.push_back(0.010);
     setToolControl(gripper_value);
     demo_count_ ++;
     break;
+
 
       case 3: // Request Pick Marker ID
       {
@@ -331,8 +335,6 @@ void OpenManipulatorPickandPlace::demoSequence()
           }
           break;
       }
-
-
 
 
       case 4: // pick the box 사용자가 입력한 번호의 마커를 집음
@@ -413,9 +415,6 @@ void OpenManipulatorPickandPlace::demoSequence()
 }
 
 
-
-
-
   case 5: // wait & grip
     setJointSpacePath(joint_name_, present_joint_angle_, 1.0);
     gripper_value.clear();
@@ -423,6 +422,7 @@ void OpenManipulatorPickandPlace::demoSequence()
     setToolControl(gripper_value);
     demo_count_++;
     break;
+
 
   case 6: // initial pose
     joint_angle.clear();
@@ -505,7 +505,6 @@ case 7: // Request Place Marker ID
     ros::Duration(0.1).sleep(); // ROS 노드가 응답을 유지하도록 100ms 대기
     break;
 }
-
 
 
      case 8: // place the box 사용자가 입력한 마커가 있는 곳에 놓음
@@ -615,6 +614,7 @@ case 7: // Request Place Marker ID
     demo_count_++;
 	break;
 
+
 case 11: // Prompt user to decide next action
 {
     // 버퍼 초기화
@@ -673,9 +673,6 @@ case 11: // Prompt user to decide next action
 }
 
 
-
-
-
     case 12: //I
     joint_angle.clear();
     joint_angle.push_back( -0.063);
@@ -686,6 +683,7 @@ case 11: // Prompt user to decide next action
     demo_count_++;
     break;
 
+
     case 13: // wait & place
     setJointSpacePath(joint_name_, present_joint_angle_, 1.0);
     gripper_value.clear();
@@ -693,6 +691,7 @@ case 11: // Prompt user to decide next action
     setToolControl(gripper_value);
     demo_count_++;
     break;
+
 
     case 14: //R
     joint_angle.clear();
@@ -704,6 +703,7 @@ case 11: // Prompt user to decide next action
     demo_count_++;
     break;
 
+
     case 15: // wait & place
     setJointSpacePath(joint_name_, present_joint_angle_, 1.0);
     gripper_value.clear();
@@ -711,6 +711,7 @@ case 11: // Prompt user to decide next action
     setToolControl(gripper_value);
     demo_count_++;
     break;
+
 
     case 16: //임시
     joint_angle.clear();
@@ -722,6 +723,7 @@ case 11: // Prompt user to decide next action
     demo_count_++;
     break;
 
+
     case 17: //A
     joint_angle.clear();
     joint_angle.push_back( -0.032);
@@ -732,6 +734,7 @@ case 11: // Prompt user to decide next action
     demo_count_++;
     break;
 
+
     case 18: // wait & place
     setJointSpacePath(joint_name_, present_joint_angle_, 1.0);
     gripper_value.clear();
@@ -739,6 +742,7 @@ case 11: // Prompt user to decide next action
     setToolControl(gripper_value);
     demo_count_++;
     break;
+
 
     case 19: //S
     joint_angle.clear();
@@ -750,6 +754,7 @@ case 11: // Prompt user to decide next action
     demo_count_++;
     break;
 
+
     case 20: // wait & place
     setJointSpacePath(joint_name_, present_joint_angle_, 1.0);
     gripper_value.clear();
@@ -757,6 +762,7 @@ case 11: // Prompt user to decide next action
     setToolControl(gripper_value);
     demo_count_++;
     break;
+
 
     case 21: //C
     joint_angle.clear();
@@ -768,6 +774,7 @@ case 11: // Prompt user to decide next action
     demo_count_++;
     break;
 
+
     case 22: // wait & place
     setJointSpacePath(joint_name_, present_joint_angle_, 1.0);
     gripper_value.clear();
@@ -775,6 +782,7 @@ case 11: // Prompt user to decide next action
     setToolControl(gripper_value);
     demo_count_++;
     break;
+
 
     case 23: // home pose
     joint_angle.clear();
@@ -786,7 +794,6 @@ case 11: // Prompt user to decide next action
     demo_count_ = 1;
     mode_state_ = DEMO_STOP;
     break;
-
 
   default:
     demo_count_++;
