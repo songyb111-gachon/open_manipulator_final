@@ -263,7 +263,7 @@ void OpenManipulatorPickandPlace::demoSequence()
   std::vector<double> kinematics_position;
   std::vector<double> kinematics_orientation;
   std::vector<double> gripper_value;
-
+}
 
   switch (demo_count_)
   {
