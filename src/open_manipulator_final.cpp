@@ -1,8 +1,9 @@
 ﻿/**
- * OpenManipulator Final Demo Code
+* OpenManipulator Final Demo Code
  * Author: 송영빈 (GitHub: https://github.com/songyb111-gachon)
  * Description: This code is developed for the final demonstration of
  *              OpenManipulator Pick and Place functionality with AR marker tracking.
+ *              The code recognizes AR markers based on user input for picking and placing tasks.
  * Date: [2024-11-23 ~ 2024-11-26]
  *
  * Note: This code is part of the Drones and Robotics team project under the supervision
@@ -14,6 +15,7 @@
  * - This project demonstrates the use of AR marker-based robotic arm manipulation.
  * - It includes picking and placing tasks using AR markers identified in a 3D space.
  * - The code integrates with ROS to control OpenManipulator hardware and process sensor data.
+ * - User input is used to specify the AR markers for the robotic arm to pick and place.
  *
  * Usage:
  * 1. Clone the repository: `git clone https://github.com/songyb111-gachon/open_manipulator_final`
