@@ -398,7 +398,7 @@ case 4: // pick the box 사용자가 입력한 번호의 마커를 집음
             // 최신 AR 마커 목록에서 탐색
             for (size_t i = 0; i < ar_marker_pose.size(); i++)
             {
-                std::cout << "[DEBUG] Detected Marker ID: " << ar_marker_pose.at(i).id << std::endl;
+                //std::cout << "[DEBUG] Detected Marker ID: " << ar_marker_pose.at(i).id << std::endl;
 
                 if (ar_marker_pose.at(i).id == pick_marker_id_)
                 {
@@ -604,7 +604,7 @@ case 7: // Request Place Marker ID
             // 최신 AR 마커 목록에서 탐색
             for (size_t i = 0; i < ar_marker_pose.size(); i++)
             {
-                std::cout << "[DEBUG] Detected Marker ID: " << ar_marker_pose.at(i).id << std::endl;
+                //std::cout << "[DEBUG] Detected Marker ID: " << ar_marker_pose.at(i).id << std::endl;
 
                 if (ar_marker_pose.at(i).id == place_marker_id_)
                 {
