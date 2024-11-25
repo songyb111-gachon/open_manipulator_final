@@ -296,7 +296,21 @@ void OpenManipulatorPickandPlace::demoSequence()
     break;
 
 
-while (!marker_found && search_attempts < 8) // 최대 8번 시도
+      case 3: // Request Pick Marker ID
+      {
+          // 버퍼 초기화
+          output_buffer_.str(""); // 버퍼 내용 비우기
+          output_buffer_.clear();
+
+          // 메시지 출력
+          output_buffer_ << "\n[INFO] Enter Pick Marker ID (0-17): ";
+          std::cout << output_buffer_.str() << std::flush; // 즉시 출력
+
+          char first_input = '\0';
+          char second_input = '\0';
+          int marker_id = -1; // 초기화된 ID 값
+
+          while (!marker_found && search_attempts < 8) // 최대 8번 시도
 {
     ros::Time start_time = ros::Time::now(); // 탐색 시작 시간
     ros::Duration detection_duration(6.0);  // 감지 시도 시간을 6초로 설정
@@ -365,6 +379,88 @@ while (!marker_found && search_attempts < 8) // 최대 8번 시도
     search_attempts++;
 }
 
+
+    if (!marker_found)
+    {
+        // 실패 메시지 출력
+        output_buffer_.str("");
+        output_buffer_.clear();
+        output_buffer_ << "[ERROR] Pick Marker ID " << pick_marker_id_
+                       << " could not be found after multiple attempts.\n";
+        std::cout << output_buffer_.str() << std::flush; // 즉시 출력
+
+        demo_count_ = 1; // 초기 단계로 돌아감
+    }
+
+    break;
+}
+
+
+      case 4: // pick the box 사용자가 입력한 번호의 마커를 집음
+{
+    // 버퍼 초기화
+    output_buffer_.str("");
+    output_buffer_.clear();
+
+    // 마커 탐색 및 수행 로직
+    bool marker_found = false;
+    int search_attempts = 0;
+
+    while (!marker_found && search_attempts < 8) // 최대 8번 시도
+    {
+        for (int i = 0; i < ar_marker_pose.size(); i++)
+        {
+            if (ar_marker_pose.at(i).id == pick_marker_id_)
+            {
+                marker_found = true;
+
+                // 작업 위치 및 방향 설정
+                kinematics_position.clear();
+                kinematics_orientation.clear();
+
+                kinematics_position.push_back(ar_marker_pose.at(i).position[0] + 0.005);
+                kinematics_position.push_back(ar_marker_pose.at(i).position[1]);
+                kinematics_position.push_back(0.033);
+
+                kinematics_orientation.push_back(0.74);
+                kinematics_orientation.push_back(0.00);
+                kinematics_orientation.push_back(0.66);
+                kinematics_orientation.push_back(0.00);
+
+                setTaskSpacePath(kinematics_position, kinematics_orientation, 3.0);
+
+                // 성공 메시지 출력
+                output_buffer_.str("");
+                output_buffer_.clear();
+                output_buffer_ << "[INFO] Pick Marker ID " << pick_marker_id_
+                               << " detected and pick task executed.\n";
+                std::cout << output_buffer_.str() << std::flush; // 즉시 출력
+
+                demo_count_++;
+                break;
+            }
+        }
+
+        // 마커를 찾으면 탐색을 멈춤
+        if (marker_found)
+        {
+            break;
+        }
+
+        // 마커를 찾지 못하면 탐색 동작 수행
+        output_buffer_.str("");
+        output_buffer_.clear();
+        output_buffer_ << "[WARNING] Pick Marker ID " << pick_marker_id_
+                       << " not detected. Adjusting base joint... (Attempt "
+                       << search_attempts + 1 << ")\n";
+        std::cout << output_buffer_.str() << std::flush; // 즉시 출력
+
+        // 위치 조정
+        std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
+        setJointSpacePath(joint_name_, search_joint_angle, 2.0);
+        ros::Duration(8.0).sleep();
+        search_attempts++;
+    }
 
     if (!marker_found)
     {
@@ -476,7 +572,7 @@ case 7: // Request Place Marker ID
 }
 
 
-     case 8: // place the box 사용자가 입력한 마커가 있는 곳에 놓음
+case 8: // place the box 사용자가 입력한 마커가 있는 곳에 놓음
 {
     // 버퍼 초기화
     output_buffer_.str("");
