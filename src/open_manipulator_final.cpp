@@ -39,9 +39,10 @@ OpenManipulatorPickandPlace::OpenManipulatorPickandPlace()
       pick_ar_id_(0),
       pick_marker_id_(-1),   // 초기값: 유효하지 않은 ID
       place_marker_id_(-1)   // 초기값: 유효하지 않은 ID
-      marker_found(false),   // 초기값 설정
-      search_attempts(0)     // 초기값 설정
+
 {
+    marker_found = false;  // 초기값 설정
+    search_attempts = 0;   // 초기값 설정
     present_joint_angle_.resize(NUM_OF_JOINT_AND_TOOL, 0.0);
     present_kinematic_position_.resize(3, 0.0);
 
