@@ -471,76 +471,72 @@ void OpenManipulatorPickandPlace::demoSequence()
 case 7: // Request Place Marker ID
 {
     // 버퍼 초기화
-    output_buffer_.str("");
+    output_buffer_.str(""); // 버퍼 내용 비우기
     output_buffer_.clear();
 
-    // 마커 탐색 및 수행 로직
-    bool marker_found = false;
-    int search_attempts = 0;
+    // 메시지 출력
+    output_buffer_ << "\n[INFO] Enter Place Marker ID (0-17): ";
+    std::cout << output_buffer_.str() << std::flush; // 즉시 출력
 
-    while (!marker_found && search_attempts < 8) // 최대 8번 시도
+    char first_input = '\0';
+    char second_input = '\0';
+    int marker_id = -1; // 초기화된 ID 값
+
+    while (true) // 유효한 입력을 받을 때까지 반복
     {
-        for (int i = 0; i < ar_marker_pose.size(); i++)
+        if (kbhit()) // 키 입력 대기
         {
-            if (ar_marker_pose.at(i).id == pick_marker_id_)
+            first_input = std::getchar(); // 첫 번째 입력
+            if (isdigit(first_input)) // 첫 번째 입력이 숫자인지 확인
             {
-                marker_found = true;
+                clock_t start_time = clock(); // 두 번째 입력 대기 시간 측정
+                while ((clock() - start_time) / CLOCKS_PER_SEC < INPUT_WAIT_TIME)
+                {
+                    if (kbhit()) // 두 번째 입력 대기
+                    {
+                        second_input = std::getchar(); // 두 번째 입력
+                        if (isdigit(second_input)) // 두 번째 입력이 숫자인지 확인
+                        {
+                            marker_id = (first_input - '0') * 10 + (second_input - '0'); // 두 글자 조합
+                            break;
+                        }
+                    }
+                }
+                if (second_input == '\0') // 두 번째 입력이 없으면 한 글자만 사용
+                {
+                    marker_id = first_input - '0';
+                }
 
-                // 작업 위치 및 방향 설정
-                kinematics_position.clear();
-                kinematics_orientation.clear();
-
-                kinematics_position.push_back(ar_marker_pose.at(i).position[0] + 0.005);
-                kinematics_position.push_back(ar_marker_pose.at(i).position[1]);
-                kinematics_position.push_back(0.033);
-
-                kinematics_orientation.push_back(0.74);
-                kinematics_orientation.push_back(0.00);
-                kinematics_orientation.push_back(0.66);
-                kinematics_orientation.push_back(0.00);
-
-                setTaskSpacePath(kinematics_position, kinematics_orientation, 3.0);
-
-                // 성공 메시지 출력
-                output_buffer_.str("");
+                if (marker_id >= 0 && marker_id <= 17) // 유효한 범위 확인
+                {
+                    // 버퍼 초기화 후 메시지 작성
+                    output_buffer_.str(""); // 버퍼 내용 비우기
+                    output_buffer_.clear();
+                    place_marker_id_ = marker_id;  // 수정된 부분: pick_marker_id_ -> place_marker_id_
+                    output_buffer_ << "[INFO] Place Marker ID set to: " << place_marker_id_ << "\n";
+                    std::cout << output_buffer_.str() << std::flush; // 즉시 출력
+                    demo_count_++; // 다음 단계로 이동
+                    break;
+                }
+                else
+                {
+                    // 잘못된 입력 처리
+                    output_buffer_.str(""); // 버퍼 내용 비우기
+                    output_buffer_.clear();
+                    output_buffer_ << "[WARNING] Invalid input. Please enter a number between 0 and 17.\n";
+                    std::cout << output_buffer_.str() << std::flush; // 즉시 출력
+                }
+            }
+            else
+            {
+                // 잘못된 첫 번째 입력 처리
+                output_buffer_.str(""); // 버퍼 내용 비우기
                 output_buffer_.clear();
-                output_buffer_ << "[INFO] Place Marker ID " << place_marker_id_
-                               << " detected and pick task executed.\n";
+                output_buffer_ << "[WARNING] Invalid input. Please enter a number between 0 and 17.\n";
                 std::cout << output_buffer_.str() << std::flush; // 즉시 출력
-
-                demo_count_++;
-                break;
             }
         }
-
-        if (!marker_found)
-        {
-            // 경고 메시지 출력
-            output_buffer_.str("");
-            output_buffer_.clear();
-            output_buffer_ << "[WARNING] Place Marker ID " << place_marker_id_
-                           << " not detected. Adjusting base joint... (Attempt "
-                           << search_attempts + 1 << ")\n";
-            std::cout << output_buffer_.str() << std::flush; // 즉시 출력
-
-            // 위치 조정
-            std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
-            setJointSpacePath(joint_name_, search_joint_angle, 2.0);
-            ros::Duration(3.0).sleep();
-            search_attempts++;
-        }
-    }
-
-    if (!marker_found)
-    {
-        // 실패 메시지 출력
-        output_buffer_.str("");
-        output_buffer_.clear();
-        output_buffer_ << "[ERROR] Place Marker ID " << place_marker_id_
-                       << " could not be found after multiple attempts.\n";
-        std::cout << output_buffer_.str() << std::flush; // 즉시 출력
-
-        demo_count_ = 1; // 초기 단계로 돌아감
+        ros::Duration(0.1).sleep(); // ROS 노드가 응답을 유지하도록 100ms 대기
     }
     break;
 }
