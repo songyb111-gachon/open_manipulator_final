@@ -261,13 +261,13 @@ void OpenManipulatorPickandPlace::demoSequence()
 
       case 3: // Request Pick Marker ID
       {
-          // 사용 전에 버퍼 초기화
+          // 버퍼 초기화
           output_buffer_.str(""); // 버퍼 내용 비우기
           output_buffer_.clear();
 
           // 메시지 출력
           output_buffer_ << "\n[INFO] Enter Pick Marker ID (0-17): ";
-          std::cout << output_buffer_.str(); // 콘솔에 즉시 출력
+          std::cout << output_buffer_.str() << std::flush; // 즉시 출력
 
           while (true) // 유효한 입력을 받을 때까지 반복
           {
@@ -283,7 +283,7 @@ void OpenManipulatorPickandPlace::demoSequence()
                           output_buffer_.str(""); // 버퍼 내용 비우기
                           output_buffer_.clear();
                           output_buffer_ << "[INFO] Pick Marker ID set to: " << pick_marker_id_ << "\n";
-                          std::cout << output_buffer_.str(); // 즉시 출력
+                          std::cout << output_buffer_.str() << std::flush; // 즉시 출력
                           demo_count_++; // 다음 단계로 이동
                           break;
                       }
@@ -293,12 +293,13 @@ void OpenManipulatorPickandPlace::demoSequence()
                   output_buffer_.str(""); // 버퍼 내용 비우기
                   output_buffer_.clear();
                   output_buffer_ << "[WARNING] Invalid input. Please enter a number between 0 and 17.\n";
-                  std::cout << output_buffer_.str(); // 즉시 출력
+                  std::cout << output_buffer_.str() << std::flush; // 즉시 출력
               }
               ros::Duration(0.1).sleep(); // ROS 노드가 응답을 유지하도록 100ms 대기
           }
           break;
       }
+
 
 
       case 4: // pick the box 사용자가 입력한 번호의 마커를 집음
