@@ -106,6 +106,9 @@ class OpenManipulatorPickandPlace
   void setModeState(char ch);
   void demoSequence();
 
+  bool marker_found = false;
+  uint8_t search_attempts;
+
 
   void printText();
   bool kbhit();

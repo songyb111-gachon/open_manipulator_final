@@ -39,6 +39,8 @@ OpenManipulatorPickandPlace::OpenManipulatorPickandPlace()
       pick_ar_id_(0),
       pick_marker_id_(-1),   // 초기값: 유효하지 않은 ID
       place_marker_id_(-1)   // 초기값: 유효하지 않은 ID
+      marker_found(false),  // 초기값 설정
+      search_attempts(0)    // 초기값 설정
 {
     present_joint_angle_.resize(NUM_OF_JOINT_AND_TOOL, 0.0);
     present_kinematic_position_.resize(3, 0.0);
@@ -371,14 +373,12 @@ void OpenManipulatorPickandPlace::demoSequence()
 
 
       case 4: // pick the box 사용자가 입력한 번호의 마커를 집음
+        marker_found = false; // 각 case에서 초기화
+    search_attempts = 0;  // 각 case에서 초기화
 {
     // 버퍼 초기화
     output_buffer_.str("");
     output_buffer_.clear();
-
-    // 마커 탐색 및 수행 로직
-    bool marker_found = false;
-    int search_attempts = 0;
 
     while (!marker_found && search_attempts < 8) // 최대 8번 시도
     {
@@ -582,14 +582,14 @@ case 7: // Request Place Marker ID
 
 
      case 8: // place the box 사용자가 입력한 마커가 있는 곳에 놓음
+       marker_found = false; // 각 case에서 초기화
+    search_attempts = 0;  // 각 case에서 초기화
 {
     // 버퍼 초기화
     output_buffer_.str("");
     output_buffer_.clear();
 
     // 마커 탐색 및 수행 로직
-    bool marker_found = false;
-    int search_attempts = 0;
 
     while (!marker_found && search_attempts < 8) // 최대 8번 시도
     {
