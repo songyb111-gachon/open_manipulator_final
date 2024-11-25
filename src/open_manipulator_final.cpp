@@ -428,7 +428,7 @@ void OpenManipulatorPickandPlace::demoSequence()
             // 위치 조정
             std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
             setJointSpacePath(joint_name_, search_joint_angle, 2.0);
-            ros::Duration(3.0).sleep();
+            ros::Duration(8.0).sleep();
             search_attempts++;
         }
     }
@@ -601,7 +601,7 @@ case 7: // Request Place Marker ID
             // 베이스 조인트 조정
             std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
             setJointSpacePath(joint_name_, search_joint_angle, 2.0);
-            ros::Duration(3.0).sleep();
+            ros::Duration(8.0).sleep();
             search_attempts++;
         }
     }
