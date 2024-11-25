@@ -259,29 +259,34 @@ void OpenManipulatorPickandPlace::demoSequence()
     demo_count_ ++;
     break;
 
-case 3: // pick the box 사용자가 입력한 번호의 마커를 집음
-{
-    printf("\n[INFO] Enter Pick Marker ID (0-17): ");
-    while (true) // 유효한 입력을 받을 때까지 반복
-    {
-        if (kbhit()) // 키 입력 대기
-        {
-            char input = std::getchar();
-            if (isdigit(input))
-            {
-                pick_marker_id_ = input - '0';
-                if (pick_marker_id_ >= 0 && pick_marker_id_ <= 17) // 유효한 범위 확인
-                {
-                    printf("[INFO] Pick Marker ID set to: %d\n", pick_marker_id_);
-                    break;
-                }
-            }
-            printf("[WARNING] Invalid input. Please enter a number between 0 and 17.\n");
-        }
-        ros::Duration(0.1).sleep(); // ROS 노드가 응답을 유지하도록 100ms 대기
-    }
+      case 3: // Request Pick Marker ID
+      {
+          printf("\n[INFO] Enter Pick Marker ID (0-17): ");
+          while (true) // 유효한 입력을 받을 때까지 반복
+          {
+              if (kbhit()) // 키 입력 대기
+              {
+                  char input = std::getchar();
+                  if (isdigit(input))
+                  {
+                      pick_marker_id_ = input - '0';
+                      if (pick_marker_id_ >= 0 && pick_marker_id_ <= 17) // 유효한 범위 확인
+                      {
+                          printf("[INFO] Pick Marker ID set to: %d\n", pick_marker_id_);
+                          demo_count_++; // 다음 단계로 이동
+                          break;
+                      }
+                  }
+                  printf("[WARNING] Invalid input. Please enter a number between 0 and 17.\n");
+              }
+              ros::Duration(0.1).sleep(); // ROS 노드가 응답을 유지하도록 100ms 대기
+          }
+          break;
+      }
 
-    // 기존 마커 탐색 및 수행 로직
+case 4: // pick the box 사용자가 입력한 번호의 마커를 집음
+{
+    //마커 탐색 및 수행 로직
     bool marker_found = false;
     int search_attempts = 0;
 
@@ -329,7 +334,7 @@ break;
 
 
 
-  case 4: // wait & grip
+  case 5: // wait & grip
     setJointSpacePath(joint_name_, present_joint_angle_, 1.0);
     gripper_value.clear();
     gripper_value.push_back(-0.008);
@@ -337,7 +342,7 @@ break;
     demo_count_++;
     break;
 
-  case 5: // initial pose
+  case 6: // initial pose
     joint_angle.clear();
     joint_angle.push_back( 0.01);
     joint_angle.push_back(-0.80);
@@ -347,29 +352,35 @@ break;
     demo_count_++;
     break;
 
-case 6: // place the box 사용자가 입력한 마커가 있는 곳에 놓음
-{
-    printf("\n[INFO] Enter Place Marker ID (0-17): ");
-    while (true) // 유효한 입력을 받을 때까지 반복
-    {
-        if (kbhit()) // 키 입력 대기
-        {
-            char input = std::getchar();
-            if (isdigit(input))
-            {
-                place_marker_id_ = input - '0';
-                if (place_marker_id_ >= 0 && place_marker_id_ <= 17) // 유효한 범위 확인
-                {
-                    printf("[INFO] Place Marker ID set to: %d\n", place_marker_id_);
-                    break;
-                }
-            }
-            printf("[WARNING] Invalid input. Please enter a number between 0 and 17.\n");
-        }
-        ros::Duration(0.1).sleep(); // ROS 노드가 응답을 유지하도록 100ms 대기
-    }
+    
+      case 7: // Request Place Marker ID
+      {
+          printf("\n[INFO] Enter Place Marker ID (0-17): ");
+          while (true) // 유효한 입력을 받을 때까지 반복
+          {
+              if (kbhit()) // 키 입력 대기
+              {
+                  char input = std::getchar();
+                  if (isdigit(input))
+                  {
+                      place_marker_id_ = input - '0';
+                      if (place_marker_id_ >= 0 && place_marker_id_ <= 17) // 유효한 범위 확인
+                      {
+                          printf("[INFO] Place Marker ID set to: %d\n", place_marker_id_);
+                          demo_count_++; // 다음 단계로 이동
+                          break;
+                      }
+                  }
+                  printf("[WARNING] Invalid input. Please enter a number between 0 and 17.\n");
+              }
+              ros::Duration(0.1).sleep(); // ROS 노드가 응답을 유지하도록 100ms 대기
+          }
+          break;
+      }
 
-    // 기존 마커 탐색 및 수행 로직 유지
+case 8: // place the box 사용자가 입력한 마커가 있는 곳에 놓음
+
+    // 마커 탐색 및 수행 로직
     bool marker_found = false;
     int search_attempts = 0;
 
@@ -417,7 +428,7 @@ break;
 
 
 
-  case 7: // wait & place
+  case 9: // wait & place
     setJointSpacePath(joint_name_, present_joint_angle_, 1.0);
     gripper_value.clear();
     gripper_value.push_back(0.010);
@@ -426,7 +437,7 @@ break;
     break;
 
 
-  case 8: // move up after place the box
+  case 10: // move up after place the box
     kinematics_position.clear();
     kinematics_orientation.clear();
 
@@ -445,7 +456,7 @@ break;
     demo_count_++;
 	break;
 
-case 9: // Prompt user to decide next action
+case 11: // Prompt user to decide next action
 {
     printf("\nWhat would you like to do next?\n");
     printf("Press 'p' to pick another object, or 'd' to proceed to demo termination.\n");
@@ -458,8 +469,12 @@ case 9: // Prompt user to decide next action
             user_input = std::getchar();
             if (user_input == 'p') // Pick another object
             {
+                // Pick과 Place ID를 초기화
+                pick_marker_id_ = -1;  // 유효하지 않은 상태로 초기화
+                place_marker_id_ = -1; // 유효하지 않은 상태로 초기화
+
                 demo_count_ = 1; // Case 1로 설정하여 pick 과정으로 돌아감
-                printf("[INFO] Returning to pick another object.\n");
+                printf("[INFO] Returning to pick another object. Marker IDs have been reset.\n");
                 break; // 루프 종료
             }
             else if (user_input == 'd') // Enter demo termination process
@@ -479,30 +494,13 @@ case 9: // Prompt user to decide next action
 }
 
 
-    case 10: //I
+
+    case 12: //I
     joint_angle.clear();
     joint_angle.push_back( -0.063);
     joint_angle.push_back( 0.061);
     joint_angle.push_back( -1.488);
     joint_angle.push_back( -0.012);
-    setJointSpacePath(joint_name_, joint_angle, 1);
-    demo_count_++;
-    break;
-
-    case 11: // wait & place
-    setJointSpacePath(joint_name_, present_joint_angle_, 1.0);
-    gripper_value.clear();
-    gripper_value.push_back(0.010);
-    setToolControl(gripper_value);
-    demo_count_++;
-    break;
-
-    case 12: //R
-    joint_angle.clear();
-    joint_angle.push_back( -0.015);
-    joint_angle.push_back( 0.030);
-    joint_angle.push_back( 0.779);
-    joint_angle.push_back( 1.759);
     setJointSpacePath(joint_name_, joint_angle, 1);
     demo_count_++;
     break;
@@ -515,7 +513,25 @@ case 9: // Prompt user to decide next action
     demo_count_++;
     break;
 
-    case 14: //임시
+    case 14: //R
+    joint_angle.clear();
+    joint_angle.push_back( -0.015);
+    joint_angle.push_back( 0.030);
+    joint_angle.push_back( 0.779);
+    joint_angle.push_back( 1.759);
+    setJointSpacePath(joint_name_, joint_angle, 1);
+    demo_count_++;
+    break;
+
+    case 15: // wait & place
+    setJointSpacePath(joint_name_, present_joint_angle_, 1.0);
+    gripper_value.clear();
+    gripper_value.push_back(0.010);
+    setToolControl(gripper_value);
+    demo_count_++;
+    break;
+
+    case 16: //임시
     joint_angle.clear();
     joint_angle.push_back( 0.00);
     joint_angle.push_back(-1.05);
@@ -525,30 +541,12 @@ case 9: // Prompt user to decide next action
     demo_count_++;
     break;
 
-    case 15: //A
+    case 17: //A
     joint_angle.clear();
     joint_angle.push_back( -0.032);
     joint_angle.push_back( 0.078);
     joint_angle.push_back( 0.894);
     joint_angle.push_back( 0.021);
-    setJointSpacePath(joint_name_, joint_angle, 1);
-    demo_count_++;
-    break;
-
-    case 16: // wait & place
-    setJointSpacePath(joint_name_, present_joint_angle_, 1.0);
-    gripper_value.clear();
-    gripper_value.push_back(0.010);
-    setToolControl(gripper_value);
-    demo_count_++;
-    break;
-
-    case 17: //S
-    joint_angle.clear();
-    joint_angle.push_back( 0.000);
-    joint_angle.push_back( -1.085);
-    joint_angle.push_back( 0.508);
-    joint_angle.push_back( -0.341);
     setJointSpacePath(joint_name_, joint_angle, 1);
     demo_count_++;
     break;
@@ -561,12 +559,12 @@ case 9: // Prompt user to decide next action
     demo_count_++;
     break;
 
-    case 19: //C
+    case 19: //S
     joint_angle.clear();
-    joint_angle.push_back( -0.031);
-    joint_angle.push_back( -1.235);
-    joint_angle.push_back( 0.032);
-    joint_angle.push_back( 1.119);
+    joint_angle.push_back( 0.000);
+    joint_angle.push_back( -1.085);
+    joint_angle.push_back( 0.508);
+    joint_angle.push_back( -0.341);
     setJointSpacePath(joint_name_, joint_angle, 1);
     demo_count_++;
     break;
@@ -579,7 +577,25 @@ case 9: // Prompt user to decide next action
     demo_count_++;
     break;
 
-    case 21: // home pose
+    case 21: //C
+    joint_angle.clear();
+    joint_angle.push_back( -0.031);
+    joint_angle.push_back( -1.235);
+    joint_angle.push_back( 0.032);
+    joint_angle.push_back( 1.119);
+    setJointSpacePath(joint_name_, joint_angle, 1);
+    demo_count_++;
+    break;
+
+    case 22: // wait & place
+    setJointSpacePath(joint_name_, present_joint_angle_, 1.0);
+    gripper_value.clear();
+    gripper_value.push_back(0.010);
+    setToolControl(gripper_value);
+    demo_count_++;
+    break;
+
+    case 23: // home pose
     joint_angle.clear();
     joint_angle.push_back( 0.00);
     joint_angle.push_back(-1.05);
@@ -601,122 +617,138 @@ case 9: // Prompt user to decide next action
 
 void OpenManipulatorPickandPlace::printText()
 {
-  system("clear");
+    system("clear");
 
-  printf("\n");
-  printf("-----------------------------\n");
-  printf("Pick and Place demonstration!\n");
-  printf("-----------------------------\n");
+    printf("\n");
+    printf("-----------------------------\n");
+    printf("Pick and Place Demonstration!\n");
+    printf("-----------------------------\n");
 
-  printf("q : Home pose\n");
-  printf("w : Pick and Place demo. start\n");
-  printf("e : Pick and Place demo. Stop\n");
+    printf("q : Home Pose\n");
+    printf("w : Start Pick and Place Demo\n");
+    printf("e : Stop Pick and Place Demo\n");
+    printf("-----------------------------\n");
 
-  printf("-----------------------------\n");
-
-  if (mode_state_ == DEMO_START)
-  {
-    switch (demo_count_)
+    if (mode_state_ == DEMO_START)
     {
-    case 1: // home pose
-      printf("Move home pose\n");
-      break;
-    case 2: // initial pose
-      printf("Move initial pose\n");
-      break;
-    case 3:
-      printf("Detecting AR marker for pick\n");
-      break;
-    case 4:
-      printf("Grip preparation\n");
-      break;
-    case 5:
-    case 6:
-      printf("Pick the box\n");
-      break;
-    case 7:
-    case 8:
-      printf("Placing the box\n");
-      break;
-    case 9:
-    case 10:
-      printf("Moving up after placing\n");
-      break;
-    case 11:
-      printf("I\n");
-      break;
-    case 12:
-      printf("wait\n");
-      break;
-    case 13:
-      printf("R\n");
-      break;
-    case 14:
-      printf("wait\n");
-      break;
-    case 15:
-      printf("wait\n");
-      break;
-    case 16:
-      printf("A\n");
-      break;
-    case 17:
-      printf("wait\n");
-      break;
-    case 18:
-      printf("S\n");
-      break;
-    case 19:
-      printf("wait\n");
-      break;
-    case 20:
-      printf("C\n");
-      break;
-    case 21:
-        printf("C\n");
-    break;
-    case 22:
-      printf("Returning to home pose\n");
-    break;
-    default:
-      printf("Unknown demo state\n");
-    break;
+        switch (demo_count_)
+        {
+        case 0:
+            printf("[INFO] Moving to Home Pose...\n");
+            break;
+        case 1:
+            printf("[INFO] Moving to Initial Pose...\n");
+            break;
+        case 2:
+            printf("[INFO] Preparing Gripper (Opening)...\n");
+            break;
+        case 3:
+            printf("[INPUT] Waiting for Pick Marker ID Input (0-17):\n");
+            break;
+        case 4:
+            printf("[INFO] Searching for AR Marker ID: %d for Picking...\n", pick_marker_id_);
+            break;
+        case 5:
+            printf("[INFO] Gripping Object...\n");
+            break;
+        case 6:
+            printf("[INFO] Returning to Initial Pose...\n");
+            break;
+        case 7:
+            printf("[INPUT] Waiting for Place Marker ID Input (0-17):\n");
+            break;
+        case 8:
+            printf("[INFO] Searching for AR Marker ID: %d for Placing...\n", place_marker_id_);
+            break;
+        case 9:
+            printf("[INFO] Releasing Object (Opening Gripper)...\n");
+            break;
+        case 10:
+            printf("[INFO] Moving Up After Placing the Object...\n");
+            break;
+        case 11:
+            printf("[CHOICE] Press 'p' to Pick Another Object or 'd' to End Demo:\n");
+            break;
+        case 12:
+            printf("[INFO] Moving to Pose I...\n");
+            break;
+        case 13:
+            printf("[INFO] I\n");
+            break;
+        case 14:
+            printf("[INFO] Moving to Pose R...\n");
+            break;
+        case 15:
+            printf("[INFO] R\n");
+            break;
+        case 16:
+            printf("[INFO] Moving to Pose A...\n");
+            break;
+        case 17:
+            printf("[[INFO] Moving to Pose A...\n");
+            break;
+        case 18:
+            printf("A\n");
+            break;
+        case 19:
+            printf("[INFO] Moving to Pose S...\n");
+            break;
+        case 20:
+            printf("S\n");
+            break;
+        case 21:
+            printf("[INFO] Moving to Pose C...\n");
+            break;
+        case 22:
+            printf("C\n");
+            break;
+        case 23:
+            printf("[INFO] Finalizing Demo. Returning to Start Position...\n");
+            break;
+        default:
+            printf("[WARNING] Unknown Demo State Detected...\n");
+            break;
+        }
     }
-  }
-  else if (mode_state_ == DEMO_STOP)
-  {
-    printf("The end of demo\n");
-  }
-
-  printf("-----------------------------\n");
-  printf("Present Joint Angle J1: %.3lf J2: %.3lf J3: %.3lf J4: %.3lf\n",
-         present_joint_angle_.at(0),
-         present_joint_angle_.at(1),
-         present_joint_angle_.at(2),
-         present_joint_angle_.at(3));
-  printf("Present Tool Position: %.3lf\n", present_joint_angle_.at(4));
-  printf("Present Kinematics Position X: %.3lf Y: %.3lf Z: %.3lf\n",
-         present_kinematic_position_.at(0),
-         present_kinematic_position_.at(1),
-         present_kinematic_position_.at(2));
-
-  if (!ar_marker_pose.empty())
-  {
-    printf("AR marker detected.\n");
-    for (int i = 0; i < ar_marker_pose.size(); i++)
+    else if (mode_state_ == DEMO_STOP)
     {
-      printf("ID: %d --> X: %.3lf\tY: %.3lf\tZ: %.3lf\n",
-             ar_marker_pose.at(i).id,
-             ar_marker_pose.at(i).position[0],
-             ar_marker_pose.at(i).position[1],
-             ar_marker_pose.at(i).position[2]);
+        printf("[INFO] Demo Stopped.\n");
     }
-  }
-  else
-  {
-    printf("No AR marker detected. Waiting for marker input...\n");
-  }
+    else if (mode_state_ == HOME_POSE)
+    {
+        printf("[INFO] Moving to Home Pose...\n");
+    }
+
+    printf("-----------------------------\n");
+    printf("Present Joint Angles: J1: %.3lf J2: %.3lf J3: %.3lf J4: %.3lf\n",
+           present_joint_angle_.at(0),
+           present_joint_angle_.at(1),
+           present_joint_angle_.at(2),
+           present_joint_angle_.at(3));
+    printf("Present Tool Position: %.3lf\n", present_joint_angle_.at(4));
+    printf("Present Kinematics Position X: %.3lf Y: %.3lf Z: %.3lf\n",
+           present_kinematic_position_.at(0),
+           present_kinematic_position_.at(1),
+           present_kinematic_position_.at(2));
+
+    if (!ar_marker_pose.empty())
+    {
+        printf("Detected AR Markers:\n");
+        for (const auto &marker : ar_marker_pose)
+        {
+            printf("ID: %d --> X: %.3lf\tY: %.3lf\tZ: %.3lf\n",
+                   marker.id,
+                   marker.position[0],
+                   marker.position[1],
+                   marker.position[2]);
+        }
+    }
+    else
+    {
+        printf("[INFO] No AR Markers Detected. Waiting for Input...\n");
+    }
 }
+
 
 
 
