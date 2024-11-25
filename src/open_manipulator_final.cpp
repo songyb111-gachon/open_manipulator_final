@@ -415,22 +415,25 @@ void OpenManipulatorPickandPlace::demoSequence()
             }
         }
 
-        if (!marker_found)
+        // 마커를 찾으면 탐색을 멈춤
+        if (marker_found)
         {
-            // 경고 메시지 출력
-            output_buffer_.str("");
-            output_buffer_.clear();
-            output_buffer_ << "[WARNING] Pick Marker ID " << pick_marker_id_
-                           << " not detected. Adjusting base joint... (Attempt "
-                           << search_attempts + 1 << ")\n";
-            std::cout << output_buffer_.str() << std::flush; // 즉시 출력
-
-            // 위치 조정
-            std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
-            setJointSpacePath(joint_name_, search_joint_angle, 2.0);
-            ros::Duration(8.0).sleep();
-            search_attempts++;
+            break;
         }
+
+        // 마커를 찾지 못하면 탐색 동작 수행
+        output_buffer_.str("");
+        output_buffer_.clear();
+        output_buffer_ << "[WARNING] Pick Marker ID " << pick_marker_id_
+                       << " not detected. Adjusting base joint... (Attempt "
+                       << search_attempts + 1 << ")\n";
+        std::cout << output_buffer_.str() << std::flush; // 즉시 출력
+
+        // 위치 조정
+        std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
+        setJointSpacePath(joint_name_, search_joint_angle, 2.0);
+        ros::Duration(8.0).sleep();
+        search_attempts++;
     }
 
     if (!marker_found)
@@ -444,6 +447,7 @@ void OpenManipulatorPickandPlace::demoSequence()
 
         demo_count_ = 1; // 초기 단계로 돌아감
     }
+
     break;
 }
 
@@ -588,22 +592,25 @@ case 7: // Request Place Marker ID
             }
         }
 
-        if (!marker_found)
+        // 마커를 찾으면 탐색을 멈춤
+        if (marker_found)
         {
-            // 경고 메시지 출력
-            output_buffer_.str("");
-            output_buffer_.clear();
-            output_buffer_ << "[WARNING] Place Marker ID " << place_marker_id_
-                           << " not detected. Adjusting base joint... (Attempt "
-                           << search_attempts + 1 << ")\n";
-            std::cout << output_buffer_.str() << std::flush; // 즉시 출력
-
-            // 베이스 조인트 조정
-            std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
-            setJointSpacePath(joint_name_, search_joint_angle, 2.0);
-            ros::Duration(8.0).sleep();
-            search_attempts++;
+            break;
         }
+
+        // 마커를 찾지 못하면 탐색 동작 수행
+        output_buffer_.str("");
+        output_buffer_.clear();
+        output_buffer_ << "[WARNING] Place Marker ID " << place_marker_id_
+                       << " not detected. Adjusting base joint... (Attempt "
+                       << search_attempts + 1 << ")\n";
+        std::cout << output_buffer_.str() << std::flush; // 즉시 출력
+
+        // 베이스 조인트 조정
+        std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
+        setJointSpacePath(joint_name_, search_joint_angle, 2.0);
+        ros::Duration(8.0).sleep();
+        search_attempts++;
     }
 
     if (!marker_found)
