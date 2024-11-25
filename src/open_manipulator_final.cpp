@@ -380,17 +380,25 @@ case 4: // pick the box 사용자가 입력한 번호의 마커를 집음
     bool marker_found = false;
     int search_attempts = 0;
 
+    // 디버깅 메시지: pick_marker_id_ 확인
+    std::cout << "[DEBUG] Starting Case 4 with Pick Marker ID: " << pick_marker_id_ << std::endl;
+
     while (!marker_found && search_attempts < 8) // 최대 8번 시도
     {
         ros::Time start_time = ros::Time::now(); // 탐색 시작 시간
         ros::Duration detection_duration(6.0);  // 감지 시도 시간을 6초로 설정
 
+        // 디버깅 메시지: 탐색 시도 출력
+        std::cout << "[DEBUG] Attempt " << search_attempts + 1 << ": Searching for Marker ID " << pick_marker_id_ << std::endl;
+
         while (ros::Time::now() - start_time < detection_duration) // 6초 동안 감지 반복
         {
+            ros::spinOnce(); // 콜백 강제 실행
+
+            // 최신 AR 마커 목록에서 탐색
             for (size_t i = 0; i < ar_marker_pose.size(); i++)
             {
-                std::cout << "[DEBUG] Searching for Marker ID: " << pick_marker_id_
-                          << ", Current Marker ID: " << ar_marker_pose.at(i).id << std::endl;
+                std::cout << "[DEBUG] Detected Marker ID: " << ar_marker_pose.at(i).id << std::endl;
 
                 if (ar_marker_pose.at(i).id == pick_marker_id_)
                 {
@@ -429,7 +437,6 @@ case 4: // pick the box 사용자가 입력한 번호의 마커를 집음
             }
 
             ros::Duration(0.1).sleep(); // 100ms 대기 후 다시 감지 시도
-            ros::spinOnce(); // 콜백 강제 실행
         }
 
         if (marker_found)
@@ -466,6 +473,7 @@ case 4: // pick the box 사용자가 입력한 번호의 마커를 집음
 
     break;
 }
+
 
 
   case 5: // wait & grip
@@ -578,15 +586,26 @@ case 7: // Request Place Marker ID
     bool marker_found = false;
     int search_attempts = 0;
 
+    // 디버깅 메시지: Place Marker ID 확인
+    std::cout << "[DEBUG] Starting Case 8 with Place Marker ID: " << place_marker_id_ << std::endl;
+
     while (!marker_found && search_attempts < 8) // 최대 8번 시도
     {
         ros::Time start_time = ros::Time::now(); // 탐색 시작 시간
         ros::Duration detection_duration(6.0);  // 감지 시도 시간을 6초로 설정
 
+        // 디버깅 메시지: 탐색 시도 출력
+        std::cout << "[DEBUG] Attempt " << search_attempts + 1 << ": Searching for Marker ID " << place_marker_id_ << std::endl;
+
         while (ros::Time::now() - start_time < detection_duration) // 6초 동안 감지 반복
         {
+            ros::spinOnce(); // 콜백 강제 실행
+
+            // 최신 AR 마커 목록에서 탐색
             for (size_t i = 0; i < ar_marker_pose.size(); i++)
             {
+                std::cout << "[DEBUG] Detected Marker ID: " << ar_marker_pose.at(i).id << std::endl;
+
                 if (ar_marker_pose.at(i).id == place_marker_id_)
                 {
                     marker_found = true;
@@ -649,7 +668,7 @@ case 7: // Request Place Marker ID
 
     if (!marker_found)
     {
-        // 에러 메시지 출력
+        // 실패 메시지 출력
         output_buffer_.str("");
         output_buffer_.clear();
         output_buffer_ << "[ERROR] Place Marker ID " << place_marker_id_
