@@ -631,29 +631,18 @@ case 7: // Request Place Marker ID
 
 
   case 10: // move up after place the box
-    if (ar_marker_pose.at(i).id == place_marker_id_)
-            {
-                marker_found = true;
-
-                // 위치 설정
-                kinematics_position.clear();
-                kinematics_orientation.clear();
-
-                kinematics_position.push_back(ar_marker_pose.at(i).position[0] + 0.005);
-                kinematics_position.push_back(ar_marker_pose.at(i).position[1]);
-                kinematics_position.push_back(0.111);
-
-                // 오리엔테이션 설정
-                kinematics_orientation.push_back(0.74);
-                kinematics_orientation.push_back(0.00);
-                kinematics_orientation.push_back(0.66);
-                kinematics_orientation.push_back(0.00);
-
-                // 작업 공간 경로 설정
-                setTaskSpacePath(kinematics_position, kinematics_orientation, 3.0);
-                break;
-            }
-  break;
+    kinematics_position.clear();
+    kinematics_orientation.clear();
+    kinematics_position.push_back(present_kinematic_position_.at(0));
+    kinematics_position.push_back(present_kinematic_position_.at(1));
+    kinematics_position.push_back(0.180);
+    kinematics_orientation.push_back(0.74);
+    kinematics_orientation.push_back(0.00);
+    kinematics_orientation.push_back(0.66);
+    kinematics_orientation.push_back(0.00);
+    setTaskSpacePath(kinematics_position, kinematics_orientation, 2.0);
+    demo_count_++;
+    break;
 
 
 case 11: // Prompt user to decide next action
