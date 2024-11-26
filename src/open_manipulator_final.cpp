@@ -762,6 +762,10 @@ case 10: // 감지한 위치에 물체 배치
 
 
   case 12: // move up after place the box
+    for (size_t i = 0; i < ar_marker_pose.size(); i++)
+            {
+                if (ar_marker_pose.at(i).id == place_marker_id_)
+                {
     kinematics_position.clear();
     kinematics_orientation.clear();
     target_place_position_.push_back(ar_marker_pose.at(i).position[0] + 0.005);
@@ -774,6 +778,8 @@ case 10: // 감지한 위치에 물체 배치
     setTaskSpacePath(kinematics_position, kinematics_orientation, 2.0);
     demo_count_++;
     break;
+    }
+  }
 
 
 case 13: // Prompt user to decide next action
