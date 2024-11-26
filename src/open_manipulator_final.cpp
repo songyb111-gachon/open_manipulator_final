@@ -396,6 +396,9 @@ case 4: // pick the box 사용자가 입력한 번호의 마커를 감지
         std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
         setJointSpacePath(joint_name_, search_joint_angle, 2.0);
 
+        // 이동 완료 대기
+        ros::Duration(1.0).sleep(); // 이동 완료를 대기 (2초, 필요 시 조정 가능)
+
         search_attempts++;
 
         // 탐색 시작
@@ -625,6 +628,9 @@ case 9: // place the box 사용자가 입력한 마커가 있는 곳에 감지�
         // 베이스 조인트 조정
         std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
         setJointSpacePath(joint_name_, search_joint_angle, 2.0);
+
+        // 이동 완료 대기
+        ros::Duration(2.0).sleep(); // 이동 완료를 대기 (2초, 필요 시 조정 가능)
 
         search_attempts++;
 
