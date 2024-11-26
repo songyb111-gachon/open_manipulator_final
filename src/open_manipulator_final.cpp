@@ -780,11 +780,15 @@ case 12: // move up after placing the box
             kinematics_orientation.push_back(0.66);
             kinematics_orientation.push_back(0.00);
 
-            setTaskSpacePath(kinematics_position, kinematics_orientation, 2.0);
+            if (!setTaskSpacePath(kinematics_position, kinematics_orientation, 2.0))
+            {
+                std::cout << "[ERROR] Failed to execute task space path for moving up." << std::endl;
+            }
             demo_count_++;
-            break;
+            break; // **이 부분이 누락되었을 가능성**
         }
     }
+    break;
 
 
 case 13: // Prompt user to decide next action
