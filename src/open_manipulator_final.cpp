@@ -761,16 +761,20 @@ case 10: // 감지한 위치에 물체 배치
     break;
 
 
-case 12: // Move up while keeping current X, Y
-    std::cout << "[DEBUG] Entering case 12: Adjusting Z value only..." << std::endl;
+case 12: // Move up relative to current Z value
+    std::cout << "[DEBUG] Entering case 12: Adjusting Z value relatively..." << std::endl;
 
     kinematics_position.clear();
     kinematics_orientation.clear();
 
-    // 현재 위치 정보를 기반으로 Z값만 수정
+    // 상대적으로 Z 값 증가 (예: 현재 Z 위치에서 +0.05m 이동)
+    double relative_z_offset = 0.05; // 원하는 Z 변화량 설정
+    double new_z = present_kinematic_position_.at(2) + relative_z_offset;
+
+    // 현재 위치 정보를 기반으로 X, Y는 유지하고 Z는 상대적으로 이동
     kinematics_position.push_back(present_kinematic_position_.at(0)); // X 유지
     kinematics_position.push_back(present_kinematic_position_.at(1)); // Y 유지
-    kinematics_position.push_back(0.180); // Z 값을 새로운 높이로 설정
+    kinematics_position.push_back(new_z); // 상대적으로 이동한 Z 값 설정
 
     // Orientation 유지
     kinematics_orientation.push_back(0.74);
@@ -781,7 +785,8 @@ case 12: // Move up while keeping current X, Y
     // 작업 공간 경로 호출
     if (setTaskSpacePath(kinematics_position, kinematics_orientation, 2.0))
     {
-        std::cout << "[DEBUG] Successfully moved up in Z direction." << std::endl;
+        std::cout << "[DEBUG] Successfully moved up in Z direction to "
+                  << new_z << " meters." << std::endl;
         demo_count_++; // 다음 단계로 진행
     }
     else
