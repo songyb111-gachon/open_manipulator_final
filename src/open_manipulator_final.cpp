@@ -394,11 +394,11 @@ case 4: // pick the box 사용자가 입력한 번호의 마커를 감지
 
         // 베이스 조인트 조정
         std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
-        setJointSpacePath(joint_name_, search_joint_angle, 2.0);
+        setJointSpacePath(joint_name_, search_joint_angle, 1.0);
 
         // 루프를 활용한 대기
         ros::Time start_time = ros::Time::now();
-        ros::Duration wait_duration(2.0); // 이동 대기 시간: 2초
+        ros::Duration wait_duration(1.0); // 이동 대기 시간: 1초
 
         while (ros::Time::now() - start_time < wait_duration)
         {
@@ -410,11 +410,11 @@ case 4: // pick the box 사용자가 입력한 번호의 마커를 감지
 
         // 탐색 시작
         ros::Time detection_start_time = ros::Time::now(); // 탐색 시작 시간
-        ros::Duration detection_duration(6.0);  // 감지 시도 시간을 6초로 설정
+        ros::Duration detection_duration(3.0);  // 감지 시도 시간을 3초로 설정
 
         std::cout << "[DEBUG] Attempt " << search_attempts << ": Searching for Marker ID " << pick_marker_id_ << std::endl;
 
-        while (ros::Time::now() - detection_start_time < detection_duration) // 6초 동안 감지 반복
+        while (ros::Time::now() - detection_start_time < detection_duration) // 3초 동안 감지 반복
         {
             ros::spinOnce(); // 콜백 강제 실행
 
@@ -652,11 +652,11 @@ case 10: // place the box 사용자가 입력한 마커가 있는 곳에 감지�
 
         // 베이스 조인트 조정
         std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
-        setJointSpacePath(joint_name_, search_joint_angle, 2.0);
+        setJointSpacePath(joint_name_, search_joint_angle, 1.0);
 
         // 이동 완료를 루프를 통해 대기
         ros::Time start_time = ros::Time::now();
-        ros::Duration wait_duration(2.0); // 이동 대기 시간: 2초
+        ros::Duration wait_duration(1.0); // 이동 대기 시간: 1초
 
         while (ros::Time::now() - start_time < wait_duration)
         {
@@ -668,7 +668,7 @@ case 10: // place the box 사용자가 입력한 마커가 있는 곳에 감지�
 
         // 탐색 시작
         ros::Time detection_start_time = ros::Time::now(); // 탐색 시작 시간
-        ros::Duration detection_duration(6.0);  // 감지 시도 시간을 6초로 설정
+        ros::Duration detection_duration(3.0);  // 감지 시도 시간을 3초로 설정
 
         std::cout << "[DEBUG] Attempt " << search_attempts << ": Searching for Marker ID " << place_marker_id_ << std::endl;
 
@@ -729,7 +729,7 @@ case 10: // place the box 사용자가 입력한 마커가 있는 곳에 감지�
                        << " could not be found after multiple attempts.\n";
         std::cout << output_buffer_.str() << std::flush; // 즉시 출력
 
-        demo_count_ = 6; // 이전 단계로 돌아감
+        demo_count_ = 8; // 이전 단계로 돌아감
     }
     else
     {
@@ -763,7 +763,7 @@ case 11: // 감지한 위치에 물체 배치
         output_buffer_ << "[ERROR] No target position/orientation set. Returning to initial state.\n";
         std::cout << output_buffer_.str() << std::flush; // 즉시 출력
 
-        demo_count_ = 6; // 이전 단계로 돌아감
+        demo_count_ = 8; // 이전 단계로 돌아감
     }
 
     break;
@@ -1149,38 +1149,11 @@ if (mode_state_ == DEMO_START)
     // demoSequence()의 출력 추가
     if (!output_buffer_.str().empty())
     {
-    printf("-----------------------------\n");
-    printf("Present Joint Angles: J1: %.3lf J2: %.3lf J3: %.3lf J4: %.3lf\n",
-           present_joint_angle_.at(0),
-           present_joint_angle_.at(1),
-           present_joint_angle_.at(2),
-           present_joint_angle_.at(3));
-
-    printf("Present Tool Position: %.3lf\n", present_joint_angle_.at(4));
-    printf("Present Kinematics Position X: %.3lf Y: %.3lf Z: %.3lf\n",
-           present_kinematic_position_.at(0),
-           present_kinematic_position_.at(1),
-           present_kinematic_position_.at(2));
-
-    if (!ar_marker_pose.empty())
-    {
-        printf("Detected AR Markers:\n");
-        for (const auto &marker : ar_marker_pose)
-        {
-            printf("ID: %d --> X: %.3lf\tY: %.3lf\tZ: %.3lf\n",
-                   marker.id,
-                   marker.position[0],
-                   marker.position[1],
-                   marker.position[2]);
-        }
-    }
-
         printf("\033[32m\n--- DemoSequence Output ---\033[0m\n"); // 초록색으로 출력
         printf("\033[32m%s\033[0m", output_buffer_.str().c_str()); // 초록색으로 출력
         output_buffer_.str("");  // 버퍼 초기화
         output_buffer_.clear();
     }
-
 }
 
 
