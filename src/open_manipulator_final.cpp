@@ -1,5 +1,5 @@
 ﻿/**
-* OpenManipulator Final Demo Code
+ * OpenManipulator Final Demo Code
  * Author: 송영빈 (GitHub: https://github.com/songyb111-gachon)
  * Description: This code is developed for the final demonstration of
  *              OpenManipulator Pick and Place functionality with AR marker tracking.
@@ -382,7 +382,7 @@ case 4: // pick the box 사용자가 입력한 번호의 마커를 감지
     bool marker_found = false;
     int search_attempts = 0;
 
-    while (!marker_found && search_attempts < 8) // 최대 8번 시도
+    while (!marker_found && search_attempts < 9) // 최대 9번 시도
     {
         ros::Time start_time = ros::Time::now(); // 탐색 시작 시간
         ros::Duration detection_duration(6.0);  // 감지 시도 시간을 6초로 설정
@@ -611,7 +611,7 @@ case 8: // Request Place Marker ID
     bool marker_found = false;
     int search_attempts = 0;
 
-    while (!marker_found && search_attempts < 8) // 최대 8번 시도
+    while (!marker_found && search_attempts < 9) // 최대 9번 시도
     {
         ros::Time start_time = ros::Time::now(); // 탐색 시작 시간
         ros::Duration detection_duration(6.0);  // 감지 시도 시간을 6초로 설정
@@ -641,7 +641,7 @@ case 8: // Request Place Marker ID
 
                     target_place_position_.push_back(ar_marker_pose.at(i).position[0] + 0.005);
                     target_place_position_.push_back(ar_marker_pose.at(i).position[1]);
-                    target_place_position_.push_back(0.069);
+                    target_place_position_.push_back(0.079);
 
                     target_place_orientation_.push_back(0.74);
                     target_place_orientation_.push_back(0.00);
