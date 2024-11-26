@@ -384,10 +384,25 @@ case 4: // pick the box 사용자가 입력한 번호의 마커를 감지
 
     while (!marker_found && search_attempts < 9) // 최대 9번 시도
     {
+        // 탐색 동작 수행 메시지 출력
+        output_buffer_.str("");
+        output_buffer_.clear();
+        output_buffer_ << "[WARNING] Pick Marker ID " << pick_marker_id_
+                       << " not detected. Adjusting base joint... (Attempt "
+                       << search_attempts + 1 << ")\n";
+        std::cout << output_buffer_.str() << std::flush; // 즉시 출력
+
+        // 베이스 조인트 조정
+        std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
+        setJointSpacePath(joint_name_, search_joint_angle, 2.0);
+
+        search_attempts++;
+
+        // 탐색 시작
         ros::Time start_time = ros::Time::now(); // 탐색 시작 시간
         ros::Duration detection_duration(6.0);  // 감지 시도 시간을 6초로 설정
 
-        std::cout << "[DEBUG] Attempt " << search_attempts + 1 << ": Searching for Marker ID " << pick_marker_id_ << std::endl;
+        std::cout << "[DEBUG] Attempt " << search_attempts << ": Searching for Marker ID " << pick_marker_id_ << std::endl;
 
         while (ros::Time::now() - start_time < detection_duration) // 6초 동안 감지 반복
         {
@@ -435,20 +450,6 @@ case 4: // pick the box 사용자가 입력한 번호의 마커를 감지
         {
             break; // 마커를 찾으면 전체 탐색 루프 종료
         }
-
-        // 마커를 찾지 못하면 탐색 동작 수행
-        output_buffer_.str("");
-        output_buffer_.clear();
-        output_buffer_ << "[WARNING] Pick Marker ID " << pick_marker_id_
-                       << " not detected. Adjusting base joint... (Attempt "
-                       << search_attempts + 1 << ")\n";
-        std::cout << output_buffer_.str() << std::flush; // 즉시 출력
-
-        // 베이스 조인트 조정
-        std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
-        setJointSpacePath(joint_name_, search_joint_angle, 2.0);
-
-        search_attempts++;
     }
 
     if (!marker_found)
@@ -599,7 +600,7 @@ case 8: // Request Place Marker ID
 }
 
 
-     case 9: // place the box 사용자가 입력한 마커가 있는 곳에 감지만 수행
+case 9: // place the box 사용자가 입력한 마커가 있는 곳에 감지만 수행
 {
     // 버퍼 초기화
     output_buffer_.str("");
@@ -613,10 +614,25 @@ case 8: // Request Place Marker ID
 
     while (!marker_found && search_attempts < 9) // 최대 9번 시도
     {
+        // 탐색 동작 수행 메시지 출력
+        output_buffer_.str("");
+        output_buffer_.clear();
+        output_buffer_ << "[WARNING] Place Marker ID " << place_marker_id_
+                       << " not detected. Adjusting base joint... (Attempt "
+                       << search_attempts + 1 << ")\n";
+        std::cout << output_buffer_.str() << std::flush; // 즉시 출력
+
+        // 베이스 조인트 조정
+        std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
+        setJointSpacePath(joint_name_, search_joint_angle, 2.0);
+
+        search_attempts++;
+
+        // 탐색 시작
         ros::Time start_time = ros::Time::now(); // 탐색 시작 시간
         ros::Duration detection_duration(6.0);  // 감지 시도 시간을 6초로 설정
 
-        std::cout << "[DEBUG] Attempt " << search_attempts + 1 << ": Searching for Marker ID " << place_marker_id_ << std::endl;
+        std::cout << "[DEBUG] Attempt " << search_attempts << ": Searching for Marker ID " << place_marker_id_ << std::endl;
 
         while (ros::Time::now() - start_time < detection_duration) // 6초 동안 감지 반복
         {
@@ -664,20 +680,6 @@ case 8: // Request Place Marker ID
         {
             break; // 마커를 찾으면 전체 탐색 루프 종료
         }
-
-        // 마커를 찾지 못하면 탐색 동작 수행
-        output_buffer_.str("");
-        output_buffer_.clear();
-        output_buffer_ << "[WARNING] Place Marker ID " << place_marker_id_
-                       << " not detected. Adjusting base joint... (Attempt "
-                       << search_attempts + 1 << ")\n";
-        std::cout << output_buffer_.str() << std::flush; // 즉시 출력
-
-        // 베이스 조인트 조정
-        std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
-        setJointSpacePath(joint_name_, search_joint_angle, 2.0);
-
-        search_attempts++;
     }
 
     if (!marker_found)
