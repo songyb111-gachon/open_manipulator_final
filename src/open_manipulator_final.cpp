@@ -999,6 +999,7 @@ void OpenManipulatorPickandPlace::printText()
 {
     system("clear");
 
+    // 헤더 출력
     printf("\n");
     printf("\033[32m-----------------------------\n"); // 초록색 시작
     printf("HelloTello Final Demonstration!\n");
@@ -1011,122 +1012,128 @@ void OpenManipulatorPickandPlace::printText()
     printf("e : Stop Pick and Place Demo\n");
     printf("-----------------------------\n");
 
-if (mode_state_ == DEMO_START)
-{
-    switch (demo_count_)
+    // 상태에 따른 출력
+    if (mode_state_ == DEMO_START)
     {
-    case 0:
-        printf("\033[32m[INFO] Moving to Home Pose...\033[0m\n");
-        break;
-    case 1:
-        printf("\033[32m[INFO] Moving to Initial Pose...\033[0m\n");
-        break;
-    case 2:
-        printf("\033[32m[INFO] Preparing Gripper (Opening)...\033[0m\n");
-        break;
-    case 3:
-        printf("\033[32m[INPUT] Waiting for Pick Marker ID Input (0-17):\033[0m\n");
-        break;
-    case 4:
-        printf("\033[32m[INFO] Searching for AR Marker ID: %d for Picking...\033[0m\n", pick_marker_id_);
-        break;
-    case 5:
-        printf("\033[32m[INFO] Moving to AR Marker ID: %d for Picking...\033[0m\n", pick_marker_id_);
-        break;
-    case 6:
-        printf("\033[32m[INFO] Gripping Object...\033[0m\n");
-        break;
-    case 7:
-        printf("\033[32m[INFO] Moving Up After Picking the Object...\033[0m\n");
-        break;
-    case 8:
-        printf("\033[32m[INFO] Returning to Initial Pose...\033[0m\n");
-        break;
-    case 9:
-        printf("\033[32m[INPUT] Waiting for Place Marker ID Input (0-17):\033[0m\n");
-        break;
-    case 10:
-        printf("\033[32m[INFO] Searching for AR Marker ID: %d for Placing...\033[0m\n", place_marker_id_);
-        break;
-    case 11:
-        printf("\033[32m[INFO] Moving to AR Marker ID: %d for Placing...\033[0m\n", place_marker_id_);
-        break;
-    case 12:
-        printf("\033[32m[INFO] Releasing Object (Opening Gripper)...\033[0m\n");
-        break;
-    case 13:
-        printf("\033[32m[INFO] Moving Up After Placing the Object...\033[0m\n");
-        break;
-    case 14:
-        printf("\033[32m[CHOICE] Press 'p' to Pick Another Object or 'd' to End Demo:\033[0m\n");
-        break;
-    case 15:
-        printf("\033[32m[INFO] Moving to Initial Pose...\033[0m\n");
-        break;
-    case 16:
-        printf("\033[32m[INFO] Moving to Pose I...\033[0m\n");
-        break;
-    case 17:
-        printf("\033[32m[INFO] I\033[0m\n");
-        break;
-    case 18:
-        printf("\033[32m[INFO] Moving to Pose R...\033[0m\n");
-        break;
-    case 19:
-        printf("\033[32m[INFO] R\033[0m\n");
-        break;
-    case 20:
-        printf("\033[32m[INFO] Moving to Pose A...\033[0m\n");
-        break;
-    case 21:
-        printf("\033[32m[[INFO] Moving to Pose A...\033[0m\n");
-        break;
-    case 22:
-        printf("\033[32mA\033[0m\n");
-        break;
-    case 23:
-        printf("\033[32m[INFO] Moving to Pose S...\033[0m\n");
-        break;
-    case 24:
-        printf("\033[32mS\033[0m\n");
-        break;
-    case 25:
-        printf("\033[32m[INFO] Moving to Pose C...\033[0m\n");
-        break;
-    case 26:
-        printf("\033[32mC\033[0m\n");
-        break;
-    case 27:
-        printf("\033[32m[INFO] Finalizing Demo. Returning to Start Position...\033[0m\n");
-        break;
-    default:
-        printf("\033[32m[WARNING] Unknown Demo State Detected...\033[0m\n");
-        break;
+        switch (demo_count_)
+        {
+        case 0:
+            printf("\033[32m[INFO] Moving to Home Pose...\033[0m\n");
+            break;
+        case 1:
+            printf("\033[32m[INFO] Moving to Initial Pose...\033[0m\n");
+            break;
+        case 2:
+            printf("\033[32m[INFO] Preparing Gripper (Opening)...\033[0m\n");
+            break;
+        case 3:
+            printf("\033[32m[INPUT] Waiting for Pick Marker ID Input (0-17):\033[0m\n");
+            break;
+        case 4:
+            printf("\033[32m[INFO] Searching for AR Marker ID: %d for Picking...\033[0m\n", pick_marker_id_);
+            break;
+        case 5:
+            printf("\033[32m[INFO] Moving to AR Marker ID: %d for Picking...\033[0m\n", pick_marker_id_);
+            break;
+        case 6:
+            printf("\033[32m[INFO] Gripping Object...\033[0m\n");
+            break;
+        case 7:
+            printf("\033[32m[INFO] Moving Up After Picking the Object...\033[0m\n");
+            break;
+        case 8:
+            printf("\033[32m[INFO] Returning to Initial Pose...\033[0m\n");
+            break;
+        case 9:
+            printf("\033[32m[INPUT] Waiting for Place Marker ID Input (0-17):\033[0m\n");
+            break;
+        case 10:
+            printf("\033[32m[INFO] Searching for AR Marker ID: %d for Placing...\033[0m\n", place_marker_id_);
+            break;
+        case 11:
+            printf("\033[32m[INFO] Moving to AR Marker ID: %d for Placing...\033[0m\n", place_marker_id_);
+            break;
+        case 12:
+            printf("\033[32m[INFO] Releasing Object (Opening Gripper)...\033[0m\n");
+            break;
+        case 13:
+            printf("\033[32m[INFO] Moving Up After Placing the Object...\033[0m\n");
+            break;
+        case 14:
+            printf("\033[32m[CHOICE] Press 'p' to Pick Another Object or 'd' to End Demo:\033[0m\n");
+            break;
+        case 15:
+            printf("\033[32m[INFO] Moving to Initial Pose...\033[0m\n");
+            break;
+        case 16:
+            printf("\033[32m[INFO] Moving to Pose I...\033[0m\n");
+            break;
+        case 17:
+            printf("\033[32m[INFO] I\033[0m\n");
+            break;
+        case 18:
+            printf("\033[32m[INFO] Moving to Pose R...\033[0m\n");
+            break;
+        case 19:
+            printf("\033[32m[INFO] R\033[0m\n");
+            break;
+        case 20:
+            printf("\033[32m[INFO] Moving to Pose A...\033[0m\n");
+            break;
+        case 21:
+            printf("\033[32m[[INFO] Moving to Pose A...\033[0m\n");
+            break;
+        case 22:
+            printf("\033[32mA\033[0m\n");
+            break;
+        case 23:
+            printf("\033[32m[INFO] Moving to Pose S...\033[0m\n");
+            break;
+        case 24:
+            printf("\033[32mS\033[0m\n");
+            break;
+        case 25:
+            printf("\033[32m[INFO] Moving to Pose C...\033[0m\n");
+            break;
+        case 26:
+            printf("\033[32mC\033[0m\n");
+            break;
+        case 27:
+            printf("\033[32m[INFO] Finalizing Demo. Returning to Start Position...\033[0m\n");
+            break;
+        default:
+            printf("\033[32m[WARNING] Unknown Demo State Detected...\033[0m\n");
+            break;
+        }
     }
-}
-
     else if (mode_state_ == DEMO_STOP)
     {
         printf("[INFO] Demo Stopped.\n");
     }
-
     else if (mode_state_ == HOME_POSE)
     {
         printf("[INFO] Moving to Home Pose...\n");
     }
 
+    // 데이터 출력
     printf("-----------------------------\n");
+    fflush(stdout); // 강제 플러시
+
     printf("Present Joint Angles: J1: %.3lf J2: %.3lf J3: %.3lf J4: %.3lf\n",
            present_joint_angle_.at(0),
            present_joint_angle_.at(1),
            present_joint_angle_.at(2),
            present_joint_angle_.at(3));
+    fflush(stdout);
 
     printf("Present Tool Position: %.3lf\n", present_joint_angle_.at(4));
+    fflush(stdout);
+
     printf("Present Kinematics Position X: %.3lf Y: %.3lf Z: %.3lf\n",
            present_kinematic_position_.at(0),
            present_kinematic_position_.at(1),
            present_kinematic_position_.at(2));
+    fflush(stdout);
 
     if (!ar_marker_pose.empty())
     {
@@ -1138,20 +1145,23 @@ if (mode_state_ == DEMO_START)
                    marker.position[0],
                    marker.position[1],
                    marker.position[2]);
+            fflush(stdout);
         }
     }
-
     else
     {
         printf("[INFO] No AR Markers Detected. Waiting for Input...\n");
+        fflush(stdout);
     }
 
-    // demoSequence()의 출력 추가
+    // DemoSequence 출력
     if (!output_buffer_.str().empty())
     {
-        printf("\033[32m\n--- DemoSequence Output ---\033[0m\n"); // 초록색으로 출력
-        printf("\033[32m%s\033[0m", output_buffer_.str().c_str()); // 초록색으로 출력
-        output_buffer_.str("");  // 버퍼 초기화
+        printf("\033[32m\n--- DemoSequence Output ---\033[0m\n");
+        printf("\033[32m%s\033[0m", output_buffer_.str().c_str());
+        fflush(stdout);
+
+        output_buffer_.str(""); // 버퍼 초기화
         output_buffer_.clear();
     }
 }
