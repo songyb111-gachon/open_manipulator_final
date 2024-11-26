@@ -61,12 +61,6 @@ OpenManipulatorPickandPlace::~OpenManipulatorPickandPlace()
     }
 }
 
-bool isJointMovementComplete()
-{
-    // 예: 로봇 컨트롤러에서 이동 상태를 반환
-    return robot_controller.isMovementDone();
-}
-
 void OpenManipulatorPickandPlace::initServiceClient()
 {
     goal_joint_space_path_client_ = node_handle_.serviceClient<open_manipulator_msgs::SetJointPosition>("goal_joint_space_path");
@@ -402,21 +396,25 @@ case 4: // pick the box 사용자가 입력한 번호의 마커를 감지
         std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
         setJointSpacePath(joint_name_, search_joint_angle, 2.0);
 
-        // 이동 완료 대기: 이동이 완료될 때까지 기다림
-        while (!isJointMovementComplete()) // 이동 완료 확인 함수
+        // 루프를 활용한 대기
+        ros::Time start_time = ros::Time::now();
+        ros::Duration wait_duration(2.0); // 이동 대기 시간: 2초
+
+        while (ros::Time::now() - start_time < wait_duration)
         {
-            ros::Duration(0.1).sleep(); // 짧게 대기하며 이동 상태 확인
+            ros::spinOnce(); // ROS 콜백 처리
+            ros::Duration(0.1).sleep(); // 100ms 간격으로 짧게 대기
         }
 
         search_attempts++;
 
         // 탐색 시작
-        ros::Time start_time = ros::Time::now(); // 탐색 시작 시간
+        ros::Time detection_start_time = ros::Time::now(); // 탐색 시작 시간
         ros::Duration detection_duration(6.0);  // 감지 시도 시간을 6초로 설정
 
         std::cout << "[DEBUG] Attempt " << search_attempts << ": Searching for Marker ID " << pick_marker_id_ << std::endl;
 
-        while (ros::Time::now() - start_time < detection_duration) // 6초 동안 감지 반복
+        while (ros::Time::now() - detection_start_time < detection_duration) // 6초 동안 감지 반복
         {
             ros::spinOnce(); // 콜백 강제 실행
 
@@ -638,21 +636,25 @@ case 9: // place the box 사용자가 입력한 마커가 있는 곳에 감지�
         std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
         setJointSpacePath(joint_name_, search_joint_angle, 2.0);
 
-        // 이동 완료 대기: 이동이 완료될 때까지 기다림
-        while (!isJointMovementComplete()) // 이동 완료 확인 함수
+        // 이동 완료를 루프를 통해 대기
+        ros::Time start_time = ros::Time::now();
+        ros::Duration wait_duration(2.0); // 이동 대기 시간: 2초
+
+        while (ros::Time::now() - start_time < wait_duration)
         {
-            ros::Duration(0.1).sleep(); // 짧게 대기하며 이동 상태 확인
+            ros::spinOnce(); // ROS 콜백 처리
+            ros::Duration(0.1).sleep(); // 100ms 간격으로 짧게 대기
         }
 
         search_attempts++;
 
         // 탐색 시작
-        ros::Time start_time = ros::Time::now(); // 탐색 시작 시간
+        ros::Time detection_start_time = ros::Time::now(); // 탐색 시작 시간
         ros::Duration detection_duration(6.0);  // 감지 시도 시간을 6초로 설정
 
         std::cout << "[DEBUG] Attempt " << search_attempts << ": Searching for Marker ID " << place_marker_id_ << std::endl;
 
-        while (ros::Time::now() - start_time < detection_duration) // 6초 동안 감지 반복
+        while (ros::Time::now() - detection_start_time < detection_duration) // 6초 동안 감지 반복
         {
             ros::spinOnce(); // 콜백 강제 실행
 
