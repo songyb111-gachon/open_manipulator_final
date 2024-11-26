@@ -765,12 +765,12 @@ case 12: // Move up relative to current Z value
 {
     std::cout << "[DEBUG] Entering case 12: Adjusting Z value relatively..." << std::endl;
 
-    // 상대적으로 Z 값 증가 (예: 현재 Z 위치에서 +0.05m 이동)
-    double relative_z_offset = 0.05; // 원하는 Z 변화량 설정
-    double new_z = present_kinematic_position_.at(2) + relative_z_offset;
-
     kinematics_position.clear();
     kinematics_orientation.clear();
+
+    // 상대적으로 Z 값 증가 (예: 현재 Z 위치에서 +0.05m 이동)
+    double relative_z_offset = 0.100; // 원하는 Z 변화량 설정
+    double new_z = present_kinematic_position_.at(2) + relative_z_offset;
 
     // 현재 위치 정보를 기반으로 X, Y는 유지하고 Z는 상대적으로 이동
     kinematics_position.push_back(present_kinematic_position_.at(0)); // X 유지
@@ -783,17 +783,27 @@ case 12: // Move up relative to current Z value
     kinematics_orientation.push_back(0.66);
     kinematics_orientation.push_back(0.00);
 
+    std::cout << "[DEBUG] Target Position: X=" << kinematics_position[0]
+              << ", Y=" << kinematics_position[1]
+              << ", Z=" << kinematics_position[2] << std::endl;
+
     // 작업 공간 경로 호출
     if (setTaskSpacePath(kinematics_position, kinematics_orientation, 2.0))
     {
         std::cout << "[DEBUG] Successfully moved up in Z direction to "
                   << new_z << " meters." << std::endl;
+
+        // 추가 대기 (로봇이 실제로 작업을 수행할 수 있는 시간 확보)
+        ros::Duration(2.5).sleep();
+
         demo_count_++; // 다음 단계로 진행
     }
     else
     {
         std::cerr << "[ERROR] Failed to execute task space path in case 12." << std::endl;
-        demo_count_++; // 실패해도 다음 단계로 진행
+
+        // 실패해도 다음 단계로 진행
+        demo_count_++;
     }
     break; // 다음 case로 넘어가도록 break 유지
 }
