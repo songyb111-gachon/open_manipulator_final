@@ -20,7 +20,7 @@
  * Usage:
  * 1. Clone the repository: `git clone https://github.com/songyb111-gachon/open_manipulator_final`
  * 2. Build the project: catkin build
- * 3. Run the node: `rosrun open_manipulator_final open_manipulator_final`.
+ * 3. Run the node: `rosrun open_manipulator_final open_manipulator_final.launch`.
  *
  * Disclaimer:
  * This code is for educational purposes as part of the team project. Use it with caution in real-world environments.
