@@ -630,7 +630,7 @@ case 9: // place the box 사용자가 입력한 마커가 있는 곳에 감지�
         setJointSpacePath(joint_name_, search_joint_angle, 2.0);
 
         // 이동 완료 대기
-        ros::Duration(2.0).sleep(); // 이동 완료를 대기 (2초, 필요 시 조정 가능)
+        ros::Duration(1.0).sleep(); // 이동 완료를 대기 (2초, 필요 시 조정 가능)
 
         search_attempts++;
 
