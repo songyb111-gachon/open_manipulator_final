@@ -519,7 +519,25 @@ case 5: // 마커를 감지 후 작업 수행
     break;
 
 
-  case 7: // initial pose
+case 7:
+{
+    // 현재 관절 각도를 유지하는 방식으로 수정
+    joint_angle.clear();
+    joint_angle.push_back(present_joint_angle_.at(0)); // 현재 J1 유지
+    joint_angle.push_back(-0.80); // J2 값 수정
+    joint_angle.push_back(present_joint_angle_.at(2)); // 현재 J3 유지
+    joint_angle.push_back(present_joint_angle_.at(3)); // 현재 J4 유지
+
+    // 관절 경로 설정
+    setJointSpacePath(joint_name_, joint_angle, 2.0);
+
+    // 다음 단계로 진행
+    demo_count_++;
+    break;
+}
+
+
+  case 8: // initial pose
     joint_angle.clear();
     joint_angle.push_back( 0.01);
     joint_angle.push_back(-0.80);
@@ -530,7 +548,7 @@ case 5: // 마커를 감지 후 작업 수행
     break;
 
     
-case 8: // Request Place Marker ID
+case 9: // Request Place Marker ID
 {
     // 버퍼 초기화
     output_buffer_.str(""); // 버퍼 내용 비우기
@@ -610,7 +628,7 @@ case 8: // Request Place Marker ID
 }
 
 
-case 9: // place the box 사용자가 입력한 마커가 있는 곳에 감지만 수행
+case 10: // place the box 사용자가 입력한 마커가 있는 곳에 감지만 수행
 {
     // 버퍼 초기화
     output_buffer_.str("");
@@ -722,7 +740,7 @@ case 9: // place the box 사용자가 입력한 마커가 있는 곳에 감지�
 }
 
 
-case 10: // 감지한 위치에 물체 배치
+case 11: // 감지한 위치에 물체 배치
 {
     if (!target_place_position_.empty() && !target_place_orientation_.empty())
     {
@@ -752,7 +770,7 @@ case 10: // 감지한 위치에 물체 배치
 }
 
 
-  case 11: // wait & place
+  case 12: // wait & place
     setJointSpacePath(joint_name_, present_joint_angle_, 1.0);
     gripper_value.clear();
     gripper_value.push_back(0.010);
@@ -761,12 +779,12 @@ case 10: // 감지한 위치에 물체 배치
     break;
 
 
-case 12:
+case 13:
 {
     // 현재 관절 각도를 유지하는 방식으로 수정
     joint_angle.clear();
     joint_angle.push_back(present_joint_angle_.at(0)); // 현재 J1 유지
-    joint_angle.push_back(-0.718); // J2 값 수정
+    joint_angle.push_back(-0.80); // J2 값 수정
     joint_angle.push_back(present_joint_angle_.at(2)); // 현재 J3 유지
     joint_angle.push_back(present_joint_angle_.at(3)); // 현재 J4 유지
 
@@ -779,7 +797,7 @@ case 12:
 }
 
 
-case 13: // Prompt user to decide next action
+case 14: // Prompt user to decide next action
 {
     // 버퍼 초기화
     output_buffer_.str("");
@@ -837,32 +855,23 @@ case 13: // Prompt user to decide next action
 }
 
 
-    case 14: //I
+case 15: // initial pose
+    joint_angle.clear();
+    joint_angle.push_back( 0.01);
+    joint_angle.push_back(-0.80);
+    joint_angle.push_back( 0.00);
+    joint_angle.push_back( 1.90);
+    setJointSpacePath(joint_name_, joint_angle, 0.01);
+    demo_count_++;
+    break;
+
+
+    case 16: //I
     joint_angle.clear();
     joint_angle.push_back( -0.063);
     joint_angle.push_back( 0.061);
     joint_angle.push_back( -1.488);
     joint_angle.push_back( -0.012);
-    setJointSpacePath(joint_name_, joint_angle, 1);
-    demo_count_++;
-    break;
-
-
-    case 15: // wait & place
-    setJointSpacePath(joint_name_, present_joint_angle_, 1.0);
-    gripper_value.clear();
-    gripper_value.push_back(0.010);
-    setToolControl(gripper_value);
-    demo_count_++;
-    break;
-
-
-    case 16: //R
-    joint_angle.clear();
-    joint_angle.push_back( -0.015);
-    joint_angle.push_back( 0.030);
-    joint_angle.push_back( 0.779);
-    joint_angle.push_back( 1.759);
     setJointSpacePath(joint_name_, joint_angle, 1);
     demo_count_++;
     break;
@@ -877,7 +886,27 @@ case 13: // Prompt user to decide next action
     break;
 
 
-    case 18: //임시
+    case 18: //R
+    joint_angle.clear();
+    joint_angle.push_back( -0.015);
+    joint_angle.push_back( 0.030);
+    joint_angle.push_back( 0.779);
+    joint_angle.push_back( 1.759);
+    setJointSpacePath(joint_name_, joint_angle, 1);
+    demo_count_++;
+    break;
+
+
+    case 19: // wait & place
+    setJointSpacePath(joint_name_, present_joint_angle_, 1.0);
+    gripper_value.clear();
+    gripper_value.push_back(0.010);
+    setToolControl(gripper_value);
+    demo_count_++;
+    break;
+
+
+    case 20: //임시
     joint_angle.clear();
     joint_angle.push_back( -0.015);
     joint_angle.push_back( -0.100);
@@ -888,32 +917,12 @@ case 13: // Prompt user to decide next action
     break;
 
 
-    case 19: //A
+    case 21: //A
     joint_angle.clear();
     joint_angle.push_back( -0.032);
     joint_angle.push_back( 0.078);
     joint_angle.push_back( 0.894);
     joint_angle.push_back( 0.021);
-    setJointSpacePath(joint_name_, joint_angle, 1);
-    demo_count_++;
-    break;
-
-
-    case 20: // wait & place
-    setJointSpacePath(joint_name_, present_joint_angle_, 1.0);
-    gripper_value.clear();
-    gripper_value.push_back(0.010);
-    setToolControl(gripper_value);
-    demo_count_++;
-    break;
-
-
-    case 21: //S
-    joint_angle.clear();
-    joint_angle.push_back( 0.000);
-    joint_angle.push_back( -1.085);
-    joint_angle.push_back( 0.508);
-    joint_angle.push_back( -0.341);
     setJointSpacePath(joint_name_, joint_angle, 1);
     demo_count_++;
     break;
@@ -928,12 +937,12 @@ case 13: // Prompt user to decide next action
     break;
 
 
-    case 23: //C
+    case 23: //S
     joint_angle.clear();
-    joint_angle.push_back( -0.031);
-    joint_angle.push_back( -1.235);
-    joint_angle.push_back( 0.032);
-    joint_angle.push_back( 1.119);
+    joint_angle.push_back( 0.000);
+    joint_angle.push_back( -1.085);
+    joint_angle.push_back( 0.508);
+    joint_angle.push_back( -0.341);
     setJointSpacePath(joint_name_, joint_angle, 1);
     demo_count_++;
     break;
@@ -948,7 +957,27 @@ case 13: // Prompt user to decide next action
     break;
 
 
-    case 25: // home pose
+    case 25: //C
+    joint_angle.clear();
+    joint_angle.push_back( -0.031);
+    joint_angle.push_back( -1.235);
+    joint_angle.push_back( 0.032);
+    joint_angle.push_back( 1.119);
+    setJointSpacePath(joint_name_, joint_angle, 1);
+    demo_count_++;
+    break;
+
+
+    case 26: // wait & place
+    setJointSpacePath(joint_name_, present_joint_angle_, 1.0);
+    gripper_value.clear();
+    gripper_value.push_back(0.010);
+    setToolControl(gripper_value);
+    demo_count_++;
+    break;
+
+
+    case 27: // home pose
     joint_angle.clear();
     joint_angle.push_back( 0.00);
     joint_angle.push_back(-1.05);
@@ -1008,60 +1037,66 @@ if (mode_state_ == DEMO_START)
         printf("\033[32m[INFO] Gripping Object...\033[0m\n");
         break;
     case 7:
-        printf("\033[32m[INFO] Returning to Initial Pose...\033[0m\n");
+        printf("\033[32m[INFO] Moving Up After Picking the Object...\033[0m\n");
         break;
     case 8:
-        printf("\033[32m[INPUT] Waiting for Place Marker ID Input (0-17):\033[0m\n");
+        printf("\033[32m[INFO] Returning to Initial Pose...\033[0m\n");
         break;
     case 9:
-        printf("\033[32m[INFO] Searching for AR Marker ID: %d for Placing...\033[0m\n", place_marker_id_);
+        printf("\033[32m[INPUT] Waiting for Place Marker ID Input (0-17):\033[0m\n");
         break;
     case 10:
-        printf("\033[32m[INFO] Moving to AR Marker ID: %d for Placing...\033[0m\n", place_marker_id_);
+        printf("\033[32m[INFO] Searching for AR Marker ID: %d for Placing...\033[0m\n", place_marker_id_);
         break;
     case 11:
-        printf("\033[32m[INFO] Releasing Object (Opening Gripper)...\033[0m\n");
+        printf("\033[32m[INFO] Moving to AR Marker ID: %d for Placing...\033[0m\n", place_marker_id_);
         break;
     case 12:
-        printf("\033[32m[INFO] Moving Up After Placing the Object...\033[0m\n");
+        printf("\033[32m[INFO] Releasing Object (Opening Gripper)...\033[0m\n");
         break;
     case 13:
-        printf("\033[32m[CHOICE] Press 'p' to Pick Another Object or 'd' to End Demo:\033[0m\n");
+        printf("\033[32m[INFO] Moving Up After Placing the Object...\033[0m\n");
         break;
     case 14:
-        printf("\033[32m[INFO] Moving to Pose I...\033[0m\n");
+        printf("\033[32m[CHOICE] Press 'p' to Pick Another Object or 'd' to End Demo:\033[0m\n");
         break;
     case 15:
-        printf("\033[32m[INFO] I\033[0m\n");
+        printf("\033[32m[INFO] Moving to Initial Pose...\033[0m\n");
         break;
     case 16:
-        printf("\033[32m[INFO] Moving to Pose R...\033[0m\n");
+        printf("\033[32m[INFO] Moving to Pose I...\033[0m\n");
         break;
     case 17:
-        printf("\033[32m[INFO] R\033[0m\n");
+        printf("\033[32m[INFO] I\033[0m\n");
         break;
     case 18:
-        printf("\033[32m[INFO] Moving to Pose A...\033[0m\n");
+        printf("\033[32m[INFO] Moving to Pose R...\033[0m\n");
         break;
     case 19:
-        printf("\033[32m[[INFO] Moving to Pose A...\033[0m\n");
+        printf("\033[32m[INFO] R\033[0m\n");
         break;
     case 20:
-        printf("\033[32mA\033[0m\n");
+        printf("\033[32m[INFO] Moving to Pose A...\033[0m\n");
         break;
     case 21:
-        printf("\033[32m[INFO] Moving to Pose S...\033[0m\n");
+        printf("\033[32m[[INFO] Moving to Pose A...\033[0m\n");
         break;
     case 22:
-        printf("\033[32mS\033[0m\n");
+        printf("\033[32mA\033[0m\n");
         break;
     case 23:
-        printf("\033[32m[INFO] Moving to Pose C...\033[0m\n");
+        printf("\033[32m[INFO] Moving to Pose S...\033[0m\n");
         break;
     case 24:
-        printf("\033[32mC\033[0m\n");
+        printf("\033[32mS\033[0m\n");
         break;
     case 25:
+        printf("\033[32m[INFO] Moving to Pose C...\033[0m\n");
+        break;
+    case 26:
+        printf("\033[32mC\033[0m\n");
+        break;
+    case 27:
         printf("\033[32m[INFO] Finalizing Demo. Returning to Start Position...\033[0m\n");
         break;
     default:
