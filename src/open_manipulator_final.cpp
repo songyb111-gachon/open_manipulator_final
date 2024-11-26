@@ -437,7 +437,7 @@ case 4: // pick the box 사용자가 입력한 번호의 마커를 감지
 
                     target_kinematics_position_.push_back(ar_marker_pose.at(i).position[0] + 0.005);
                     target_kinematics_position_.push_back(ar_marker_pose.at(i).position[1]);
-                    target_kinematics_position_.push_back(0.033);
+                    target_kinematics_position_.push_back(0.036);
 
                     target_kinematics_orientation_.push_back(0.74);
                     target_kinematics_orientation_.push_back(0.00);
@@ -677,7 +677,7 @@ case 9: // place the box 사용자가 입력한 마커가 있는 곳에 감지�
 
                     target_place_position_.push_back(ar_marker_pose.at(i).position[0] + 0.005);
                     target_place_position_.push_back(ar_marker_pose.at(i).position[1]);
-                    target_place_position_.push_back(0.079);
+                    target_place_position_.push_back(0.087);
 
                     target_place_orientation_.push_back(0.74);
                     target_place_orientation_.push_back(0.00);
