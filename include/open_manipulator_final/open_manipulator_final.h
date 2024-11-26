@@ -76,6 +76,11 @@ class OpenManipulatorPickandPlace
   std::vector<ArMarker> ar_marker_pose;
   std::ostringstream output_buffer_;
 
+  std::vector<double> target_kinematics_position_;
+  std::vector<double> target_kinematics_orientation_;
+  std::vector<double> target_place_position_;
+  std::vector<double> target_place_orientation_;
+
   uint8_t mode_state_;
   uint8_t demo_count_;
   uint8_t pick_ar_id_;
