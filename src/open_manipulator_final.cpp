@@ -768,7 +768,21 @@ case 12: // Move up relative to current Z value
     kinematics_position.clear();
     kinematics_orientation.clear();
 
-    // 상대적으로 Z 값 증가 (예: 현재 Z 위치에서 +0.05m 이동)
+    // 현재 위치 확인
+    std::cout << "[DEBUG] Current Position: X=" << present_kinematic_position_.at(0)
+              << ", Y=" << present_kinematic_position_.at(1)
+              << ", Z=" << present_kinematic_position_.at(2) << std::endl;
+
+    // present_kinematic_position_ 값 검증
+    if (present_kinematic_position_.size() < 3)
+    {
+        std::cerr << "[ERROR] present_kinematic_position_ has invalid size: "
+                  << present_kinematic_position_.size() << std::endl;
+        demo_count_++;
+        break;
+    }
+
+    // 상대적으로 Z 값 증가 (예: 현재 Z 위치에서 +0.10m 이동)
     double relative_z_offset = 0.100; // 원하는 Z 변화량 설정
     double new_z = present_kinematic_position_.at(2) + relative_z_offset;
 
