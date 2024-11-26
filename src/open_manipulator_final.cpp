@@ -766,7 +766,7 @@ case 12:
     // 현재 관절 각도를 유지하는 방식으로 수정
     joint_angle.clear();
     joint_angle.push_back(present_joint_angle_.at(0)); // 현재 J1 유지
-    joint_angle.push_back(-0.138); // J2 값 수정
+    joint_angle.push_back(-0.718); // J2 값 수정
     joint_angle.push_back(present_joint_angle_.at(2)); // 현재 J3 유지
     joint_angle.push_back(present_joint_angle_.at(3)); // 현재 J4 유지
 
