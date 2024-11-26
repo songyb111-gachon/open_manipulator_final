@@ -761,34 +761,45 @@ case 10: // 감지한 위치에 물체 배치
     break;
 
 
-case 12: // move up after placing the box
+case 12:
+    if (ar_marker_pose.empty())
+    {
+        std::cerr << "[ERROR] No AR markers detected in case 12." << std::endl;
+        demo_count_ = 13; // 실패 시 다음 단계로 강제 이동
+        break;
+    }
+
     for (size_t i = 0; i < ar_marker_pose.size(); i++)
     {
         if (ar_marker_pose.at(i).id == place_marker_id_)
         {
+            std::cout << "[DEBUG] Found marker ID: " << place_marker_id_ << std::endl;
             kinematics_position.clear();
             kinematics_orientation.clear();
 
-            // 현재 위치를 기준으로 x, y는 그대로, z만 수정
-            kinematics_position.push_back(ar_marker_pose.at(i).position[0]); // x
-            kinematics_position.push_back(ar_marker_pose.at(i).position[1]); // y
-            kinematics_position.push_back(0.180); // z (변경된 값)
+            kinematics_position.push_back(ar_marker_pose.at(i).position[0]);
+            kinematics_position.push_back(ar_marker_pose.at(i).position[1]);
+            kinematics_position.push_back(0.180);
 
-            // 기존 orientation 설정
             kinematics_orientation.push_back(0.74);
             kinematics_orientation.push_back(0.00);
             kinematics_orientation.push_back(0.66);
             kinematics_orientation.push_back(0.00);
 
-            if (!setTaskSpacePath(kinematics_position, kinematics_orientation, 2.0))
+            if (setTaskSpacePath(kinematics_position, kinematics_orientation, 2.0))
             {
-                std::cout << "[ERROR] Failed to execute task space path for moving up." << std::endl;
+                std::cout << "[DEBUG] Successfully moved up." << std::endl;
+                demo_count_++;
             }
-            demo_count_++;
-            break; // **이 부분이 누락되었을 가능성**
+            else
+            {
+                std::cerr << "[ERROR] Failed to move up in case 12." << std::endl;
+            }
+            break;
         }
     }
-    break;
+
+    break; // break 누락 방지
 
 
 case 13: // Prompt user to decide next action
