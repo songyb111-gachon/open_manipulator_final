@@ -909,8 +909,8 @@ case 15: // initial pose
     case 20: //임시
     joint_angle.clear();
     joint_angle.push_back( -0.015);
-    joint_angle.push_back( -0.100);
-    joint_angle.push_back( 0.579);
+    joint_angle.push_back( -0.300);
+    joint_angle.push_back( 0.779);
     joint_angle.push_back( 1.759);
     setJointSpacePath(joint_name_, joint_angle, 1);
     demo_count_++;
