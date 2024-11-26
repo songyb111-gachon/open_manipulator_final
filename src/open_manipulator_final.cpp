@@ -761,25 +761,30 @@ case 10: // 감지한 위치에 물체 배치
     break;
 
 
-  case 12: // move up after place the box
+case 12: // move up after placing the box
     for (size_t i = 0; i < ar_marker_pose.size(); i++)
-            {
-                if (ar_marker_pose.at(i).id == place_marker_id_)
-                {
-    kinematics_position.clear();
-    kinematics_orientation.clear();
-    target_place_position_.push_back(ar_marker_pose.at(i).position[0] + 0.005);
-    target_place_position_.push_back(ar_marker_pose.at(i).position[1]);
-    target_place_position_.push_back(0.180);
-    kinematics_orientation.push_back(0.74);
-    kinematics_orientation.push_back(0.00);
-    kinematics_orientation.push_back(0.66);
-    kinematics_orientation.push_back(0.00);
-    setTaskSpacePath(kinematics_position, kinematics_orientation, 2.0);
-    demo_count_++;
-    break;
+    {
+        if (ar_marker_pose.at(i).id == place_marker_id_)
+        {
+            kinematics_position.clear();
+            kinematics_orientation.clear();
+
+            // 현재 위치를 기준으로 x, y는 그대로, z만 수정
+            kinematics_position.push_back(ar_marker_pose.at(i).position[0]); // x
+            kinematics_position.push_back(ar_marker_pose.at(i).position[1]); // y
+            kinematics_position.push_back(0.180); // z (변경된 값)
+
+            // 기존 orientation 설정
+            kinematics_orientation.push_back(0.74);
+            kinematics_orientation.push_back(0.00);
+            kinematics_orientation.push_back(0.66);
+            kinematics_orientation.push_back(0.00);
+
+            setTaskSpacePath(kinematics_position, kinematics_orientation, 2.0);
+            demo_count_++;
+            break;
+        }
     }
-  }
 
 
 case 13: // Prompt user to decide next action
