@@ -1,5 +1,5 @@
 ﻿/**
-* OpenManipulator Final Demo Code
+ * OpenManipulator Final Demo Code
  * Author: 송영빈 (GitHub: https://github.com/songyb111-gachon)
  * Description: This code is developed for the final demonstration of
  *              OpenManipulator Pick and Place functionality with AR marker tracking.
@@ -370,36 +370,98 @@ void OpenManipulatorPickandPlace::demoSequence()
       }
 
 
-case 4: // pick the box 사용자가 입력한 번호의 마커를 집음
+case 4: // detect the marker
 {
     // 버퍼 초기화
     output_buffer_.str("");
     output_buffer_.clear();
 
-    // 마커 탐색 및 수행 로직
     bool marker_found = false;
     int search_attempts = 0;
 
-    // 디버깅 메시지: pick_marker_id_ 확인
-    std::cout << "[DEBUG] Starting Case 4 with Pick Marker ID: " << pick_marker_id_ << std::endl;
+    std::vector<double> kinematics_position;
+    std::vector<double> kinematics_orientation;
 
     while (!marker_found && search_attempts < 8) // 최대 8번 시도
     {
         ros::Time start_time = ros::Time::now(); // 탐색 시작 시간
-        ros::Duration detection_duration(6.0);  // 감지 시도 시간을 6초로 설정
+        ros::Duration detection_duration(6.0);  // 감지 시간 6초
 
-        // 디버깅 메시지: 탐색 시도 출력
+        // 디버깅 메시지 출력
         std::cout << "[DEBUG] Attempt " << search_attempts + 1 << ": Searching for Marker ID " << pick_marker_id_ << std::endl;
 
-        while (ros::Time::now() - start_time < detection_duration) // 6초 동안 감지 반복
+        while (ros::Time::now() - start_time < detection_duration)
         {
             ros::spinOnce(); // 콜백 강제 실행
 
-            // 최신 AR 마커 목록에서 탐색
             for (size_t i = 0; i < ar_marker_pose.size(); i++)
             {
-                //std::cout << "[DEBUG] Detected Marker ID: " << ar_marker_pose.at(i).id << std::endl;
+                if (ar_marker_pose.at(i).id == pick_marker_id_)
+                {
+                    marker_found = true;
+                    std::cout << "[INFO] Marker ID " << pick_marker_id_ << " detected.\n" << std::flush;
+                    break;
+                }
+            }
 
+            if (marker_found)
+            {
+                break;
+            }
+
+            ros::Duration(0.1).sleep(); // 100ms 대기
+        }
+
+        if (!marker_found)
+        {
+            std::cout << "[WARNING] Marker ID " << pick_marker_id_
+                      << " not detected. Adjusting base joint... (Attempt "
+                      << search_attempts + 1 << ")\n" << std::flush;
+
+            // 베이스 조인트 조정
+            std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
+            setJointSpacePath(joint_name_, search_joint_angle, 2.0);
+        }
+
+        search_attempts++;
+    }
+
+    if (!marker_found)
+    {
+        output_buffer_ << "[ERROR] Marker ID " << pick_marker_id_ << " could not be found after multiple attempts.\n";
+        std::cout << output_buffer_.str() << std::flush;
+    }
+
+    break;
+}
+
+
+case 5: // move to marker's position
+{
+    // 버퍼 초기화
+    output_buffer_.str("");
+    output_buffer_.clear();
+
+    bool marker_found = false;
+    int search_attempts = 0;
+
+    std::vector<double> kinematics_position;
+    std::vector<double> kinematics_orientation;
+
+    while (!marker_found && search_attempts < 8) // 최대 8번 시도
+    {
+        ros::Time start_time = ros::Time::now(); // 탐색 시작 시간
+        ros::Duration detection_duration(6.0);  // 감지 시간 6초
+
+        // 디버깅 메시지 출력
+        std::cout << "[DEBUG] Attempt " << search_attempts + 1 << ": Searching for Marker ID " << pick_marker_id_ << std::endl;
+
+        while (ros::Time::now() - start_time < detection_duration)
+        {
+            ros::spinOnce(); // 콜백 강제 실행
+
+            for (size_t i = 0; i < ar_marker_pose.size(); i++)
+            {
                 if (ar_marker_pose.at(i).id == pick_marker_id_)
                 {
                     marker_found = true;
@@ -419,64 +481,45 @@ case 4: // pick the box 사용자가 입력한 번호의 마커를 집음
 
                     setTaskSpacePath(kinematics_position, kinematics_orientation, 3.0);
 
-                    // 성공 메시지 출력
-                    output_buffer_.str("");
-                    output_buffer_.clear();
-                    output_buffer_ << "[INFO] Pick Marker ID " << pick_marker_id_
-                                   << " detected and pick task executed.\n";
-                    std::cout << output_buffer_.str() << std::flush; // 즉시 출력
-
-                    demo_count_++;
+                    output_buffer_ << "[INFO] Moved to Marker ID " << pick_marker_id_ << "'s position successfully.\n";
+                    std::cout << output_buffer_.str() << std::flush;
                     break;
                 }
             }
 
             if (marker_found)
             {
-                break; // 마커를 찾으면 내부 감지 루프 종료
+                break;
             }
 
-            ros::Duration(0.1).sleep(); // 100ms 대기 후 다시 감지 시도
+            ros::Duration(0.1).sleep(); // 100ms 대기
         }
 
-        if (marker_found)
+        if (!marker_found)
         {
-            break; // 마커를 찾으면 전체 탐색 루프 종료
+            std::cout << "[WARNING] Marker ID " << pick_marker_id_
+                      << " not detected. Adjusting base joint... (Attempt "
+                      << search_attempts + 1 << ")\n" << std::flush;
+
+            // 베이스 조인트 조정
+            std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
+            setJointSpacePath(joint_name_, search_joint_angle, 2.0);
         }
-
-        // 마커를 찾지 못하면 탐색 동작 수행
-        output_buffer_.str("");
-        output_buffer_.clear();
-        output_buffer_ << "[WARNING] Pick Marker ID " << pick_marker_id_
-                       << " not detected. Adjusting base joint... (Attempt "
-                       << search_attempts + 1 << ")\n";
-        std::cout << output_buffer_.str() << std::flush; // 즉시 출력
-
-        // 베이스 조인트 조정
-        std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
-        setJointSpacePath(joint_name_, search_joint_angle, 2.0);
 
         search_attempts++;
     }
 
     if (!marker_found)
     {
-        // 실패 메시지 출력
-        output_buffer_.str("");
-        output_buffer_.clear();
-        output_buffer_ << "[ERROR] Pick Marker ID " << pick_marker_id_
-                       << " could not be found after multiple attempts.\n";
-        std::cout << output_buffer_.str() << std::flush; // 즉시 출력
-
-        demo_count_ = 1; // 초기 단계로 돌아감
+        output_buffer_ << "[ERROR] Marker ID " << pick_marker_id_ << " could not be found after multiple attempts.\n";
+        std::cout << output_buffer_.str() << std::flush;
     }
 
     break;
 }
 
 
-
-  case 5: // wait & grip
+  case 6: // wait & grip
     setJointSpacePath(joint_name_, present_joint_angle_, 1.0);
     gripper_value.clear();
     gripper_value.push_back(-0.008);
@@ -485,7 +528,7 @@ case 4: // pick the box 사용자가 입력한 번호의 마커를 집음
     break;
 
 
-  case 6: // initial pose
+  case 7: // initial pose
     joint_angle.clear();
     joint_angle.push_back( 0.01);
     joint_angle.push_back(-0.80);
@@ -496,7 +539,7 @@ case 4: // pick the box 사용자가 입력한 번호의 마커를 집음
     break;
 
     
-case 7: // Request Place Marker ID
+case 8: // Request Place Marker ID
 {
     // 버퍼 초기화
     output_buffer_.str(""); // 버퍼 내용 비우기
@@ -576,41 +619,109 @@ case 7: // Request Place Marker ID
 }
 
 
-     case 8: // place the box 사용자가 입력한 마커가 있는 곳에 놓음
+     case 9: // detect the place marker
 {
     // 버퍼 초기화
     output_buffer_.str("");
     output_buffer_.clear();
 
-    // 마커 탐색 및 수행 로직
     bool marker_found = false;
     int search_attempts = 0;
 
+    std::vector<double> kinematics_position;
+    std::vector<double> kinematics_orientation;
+
     // 디버깅 메시지: Place Marker ID 확인
-    std::cout << "[DEBUG] Starting Case 8 with Place Marker ID: " << place_marker_id_ << std::endl;
+    std::cout << "[DEBUG] Starting Case 9 (Detection) with Place Marker ID: " << place_marker_id_ << std::endl;
 
     while (!marker_found && search_attempts < 8) // 최대 8번 시도
     {
         ros::Time start_time = ros::Time::now(); // 탐색 시작 시간
-        ros::Duration detection_duration(6.0);  // 감지 시도 시간을 6초로 설정
+        ros::Duration detection_duration(6.0);  // 감지 시간 6초
 
-        // 디버깅 메시지: 탐색 시도 출력
+        // 탐색 시도 출력
         std::cout << "[DEBUG] Attempt " << search_attempts + 1 << ": Searching for Marker ID " << place_marker_id_ << std::endl;
 
-        while (ros::Time::now() - start_time < detection_duration) // 6초 동안 감지 반복
+        while (ros::Time::now() - start_time < detection_duration)
         {
             ros::spinOnce(); // 콜백 강제 실행
 
-            // 최신 AR 마커 목록에서 탐색
             for (size_t i = 0; i < ar_marker_pose.size(); i++)
             {
-                //std::cout << "[DEBUG] Detected Marker ID: " << ar_marker_pose.at(i).id << std::endl;
+                if (ar_marker_pose.at(i).id == place_marker_id_)
+                {
+                    marker_found = true;
+                    std::cout << "[INFO] Place Marker ID " << place_marker_id_ << " detected.\n" << std::flush;
+                    break;
+                }
+            }
 
+            if (marker_found)
+            {
+                break;
+            }
+
+            ros::Duration(0.1).sleep(); // 100ms 대기
+        }
+
+        if (!marker_found)
+        {
+            std::cout << "[WARNING] Place Marker ID " << place_marker_id_
+                      << " not detected. Adjusting base joint... (Attempt "
+                      << search_attempts + 1 << ")\n" << std::flush;
+
+            // 베이스 조인트 조정
+            std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
+            setJointSpacePath(joint_name_, search_joint_angle, 2.0);
+        }
+
+        search_attempts++;
+    }
+
+    if (!marker_found)
+    {
+        output_buffer_ << "[ERROR] Place Marker ID " << place_marker_id_ << " could not be found after multiple attempts.\n";
+        std::cout << output_buffer_.str() << std::flush;
+    }
+
+    break;
+}
+
+
+case 10: // place the box at the marker's location
+{
+    // 버퍼 초기화
+    output_buffer_.str("");
+    output_buffer_.clear();
+
+    bool marker_found = false;
+    int search_attempts = 0;
+
+    std::vector<double> kinematics_position;
+    std::vector<double> kinematics_orientation;
+
+    // 디버깅 메시지: Place Marker ID 확인
+    std::cout << "[DEBUG] Starting Case 10 (Placement) with Place Marker ID: " << place_marker_id_ << std::endl;
+
+    while (!marker_found && search_attempts < 8) // 최대 8번 시도
+    {
+        ros::Time start_time = ros::Time::now(); // 탐색 시작 시간
+        ros::Duration detection_duration(6.0);  // 감지 시간 6초
+
+        // 탐색 시도 출력
+        std::cout << "[DEBUG] Attempt " << search_attempts + 1 << ": Searching for Marker ID " << place_marker_id_ << std::endl;
+
+        while (ros::Time::now() - start_time < detection_duration)
+        {
+            ros::spinOnce(); // 콜백 강제 실행
+
+            for (size_t i = 0; i < ar_marker_pose.size(); i++)
+            {
                 if (ar_marker_pose.at(i).id == place_marker_id_)
                 {
                     marker_found = true;
 
-                    // 위치 설정
+                    // 위치 및 오리엔테이션 설정
                     kinematics_position.clear();
                     kinematics_orientation.clear();
 
@@ -618,7 +729,6 @@ case 7: // Request Place Marker ID
                     kinematics_position.push_back(ar_marker_pose.at(i).position[1]);
                     kinematics_position.push_back(0.069);
 
-                    // 오리엔테이션 설정
                     kinematics_orientation.push_back(0.74);
                     kinematics_orientation.push_back(0.00);
                     kinematics_orientation.push_back(0.66);
@@ -627,62 +737,46 @@ case 7: // Request Place Marker ID
                     // 작업 공간 경로 설정
                     setTaskSpacePath(kinematics_position, kinematics_orientation, 3.0);
 
-                    // 성공 메시지 출력
-                    output_buffer_.str("");
-                    output_buffer_.clear();
                     output_buffer_ << "[INFO] Successfully placed the object at Marker ID: " << place_marker_id_ << "\n";
                     std::cout << output_buffer_.str() << std::flush; // 즉시 출력
-
-                    demo_count_++;
                     break;
                 }
             }
 
             if (marker_found)
             {
-                break; // 마커를 찾으면 내부 감지 루프 종료
+                break;
             }
 
-            ros::Duration(0.1).sleep(); // 100ms 대기 후 다시 감지 시도
+            ros::Duration(0.1).sleep(); // 100ms 대기
         }
 
-        if (marker_found)
+        if (!marker_found)
         {
-            break; // 마커를 찾으면 전체 탐색 루프 종료
+            std::cout << "[WARNING] Place Marker ID " << place_marker_id_
+                      << " not detected. Adjusting base joint... (Attempt "
+                      << search_attempts + 1 << ")\n" << std::flush;
+
+            // 베이스 조인트 조정
+            std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
+            setJointSpacePath(joint_name_, search_joint_angle, 2.0);
         }
-
-        // 마커를 찾지 못하면 탐색 동작 수행
-        output_buffer_.str("");
-        output_buffer_.clear();
-        output_buffer_ << "[WARNING] Place Marker ID " << place_marker_id_
-                       << " not detected. Adjusting base joint... (Attempt "
-                       << search_attempts + 1 << ")\n";
-        std::cout << output_buffer_.str() << std::flush; // 즉시 출력
-
-        // 베이스 조인트 조정
-        std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
-        setJointSpacePath(joint_name_, search_joint_angle, 2.0);
 
         search_attempts++;
     }
 
     if (!marker_found)
     {
-        // 실패 메시지 출력
-        output_buffer_.str("");
-        output_buffer_.clear();
-        output_buffer_ << "[ERROR] Place Marker ID " << place_marker_id_
-                       << " could not be found after multiple attempts.\n";
-        std::cout << output_buffer_.str() << std::flush; // 즉시 출력
-
-        demo_count_ = 6; // 이전 단계로 돌아감
+        output_buffer_ << "[ERROR] Place Marker ID " << place_marker_id_ << " could not be found after multiple attempts.\n";
+        std::cout << output_buffer_.str() << std::flush;
     }
 
     break;
 }
 
 
-  case 9: // wait & place
+
+  case 11: // wait & place
     setJointSpacePath(joint_name_, present_joint_angle_, 1.0);
     gripper_value.clear();
     gripper_value.push_back(0.010);
@@ -691,7 +785,7 @@ case 7: // Request Place Marker ID
     break;
 
 
-  case 10: // move up after place the box
+  case 12: // move up after place the box
     kinematics_position.clear();
     kinematics_orientation.clear();
     kinematics_position.push_back(present_kinematic_position_.at(0));
@@ -706,7 +800,7 @@ case 7: // Request Place Marker ID
     break;
 
 
-case 11: // Prompt user to decide next action
+case 13: // Prompt user to decide next action
 {
     // 버퍼 초기화
     output_buffer_.str("");
@@ -764,32 +858,12 @@ case 11: // Prompt user to decide next action
 }
 
 
-    case 12: //I
+    case 14: //I
     joint_angle.clear();
     joint_angle.push_back( -0.063);
     joint_angle.push_back( 0.061);
     joint_angle.push_back( -1.488);
     joint_angle.push_back( -0.012);
-    setJointSpacePath(joint_name_, joint_angle, 1);
-    demo_count_++;
-    break;
-
-
-    case 13: // wait & place
-    setJointSpacePath(joint_name_, present_joint_angle_, 1.0);
-    gripper_value.clear();
-    gripper_value.push_back(0.010);
-    setToolControl(gripper_value);
-    demo_count_++;
-    break;
-
-
-    case 14: //R
-    joint_angle.clear();
-    joint_angle.push_back( -0.015);
-    joint_angle.push_back( 0.030);
-    joint_angle.push_back( 0.779);
-    joint_angle.push_back( 1.759);
     setJointSpacePath(joint_name_, joint_angle, 1);
     demo_count_++;
     break;
@@ -804,7 +878,27 @@ case 11: // Prompt user to decide next action
     break;
 
 
-    case 16: //임시
+    case 16: //R
+    joint_angle.clear();
+    joint_angle.push_back( -0.015);
+    joint_angle.push_back( 0.030);
+    joint_angle.push_back( 0.779);
+    joint_angle.push_back( 1.759);
+    setJointSpacePath(joint_name_, joint_angle, 1);
+    demo_count_++;
+    break;
+
+
+    case 17: // wait & place
+    setJointSpacePath(joint_name_, present_joint_angle_, 1.0);
+    gripper_value.clear();
+    gripper_value.push_back(0.010);
+    setToolControl(gripper_value);
+    demo_count_++;
+    break;
+
+
+    case 18: //임시
     joint_angle.clear();
     joint_angle.push_back( -0.015);
     joint_angle.push_back( -0.100);
@@ -815,32 +909,12 @@ case 11: // Prompt user to decide next action
     break;
 
 
-    case 17: //A
+    case 19: //A
     joint_angle.clear();
     joint_angle.push_back( -0.032);
     joint_angle.push_back( 0.078);
     joint_angle.push_back( 0.894);
     joint_angle.push_back( 0.021);
-    setJointSpacePath(joint_name_, joint_angle, 1);
-    demo_count_++;
-    break;
-
-
-    case 18: // wait & place
-    setJointSpacePath(joint_name_, present_joint_angle_, 1.0);
-    gripper_value.clear();
-    gripper_value.push_back(0.010);
-    setToolControl(gripper_value);
-    demo_count_++;
-    break;
-
-
-    case 19: //S
-    joint_angle.clear();
-    joint_angle.push_back( 0.000);
-    joint_angle.push_back( -1.085);
-    joint_angle.push_back( 0.508);
-    joint_angle.push_back( -0.341);
     setJointSpacePath(joint_name_, joint_angle, 1);
     demo_count_++;
     break;
@@ -855,12 +929,12 @@ case 11: // Prompt user to decide next action
     break;
 
 
-    case 21: //C
+    case 21: //S
     joint_angle.clear();
-    joint_angle.push_back( -0.031);
-    joint_angle.push_back( -1.235);
-    joint_angle.push_back( 0.032);
-    joint_angle.push_back( 1.119);
+    joint_angle.push_back( 0.000);
+    joint_angle.push_back( -1.085);
+    joint_angle.push_back( 0.508);
+    joint_angle.push_back( -0.341);
     setJointSpacePath(joint_name_, joint_angle, 1);
     demo_count_++;
     break;
@@ -875,7 +949,27 @@ case 11: // Prompt user to decide next action
     break;
 
 
-    case 23: // home pose
+    case 23: //C
+    joint_angle.clear();
+    joint_angle.push_back( -0.031);
+    joint_angle.push_back( -1.235);
+    joint_angle.push_back( 0.032);
+    joint_angle.push_back( 1.119);
+    setJointSpacePath(joint_name_, joint_angle, 1);
+    demo_count_++;
+    break;
+
+
+    case 24: // wait & place
+    setJointSpacePath(joint_name_, present_joint_angle_, 1.0);
+    gripper_value.clear();
+    gripper_value.push_back(0.010);
+    setToolControl(gripper_value);
+    demo_count_++;
+    break;
+
+
+    case 25: // home pose
     joint_angle.clear();
     joint_angle.push_back( 0.00);
     joint_angle.push_back(-1.05);
@@ -929,60 +1023,66 @@ if (mode_state_ == DEMO_START)
         printf("\033[32m[INFO] Searching for AR Marker ID: %d for Picking...\033[0m\n", pick_marker_id_);
         break;
     case 5:
-        printf("\033[32m[INFO] Gripping Object...\033[0m\n");
+        printf("\033[32m[INFO] Moving for AR Marker ID: %d for Picking...\033[0m\n", pick_marker_id_);
         break;
     case 6:
-        printf("\033[32m[INFO] Returning to Initial Pose...\033[0m\n");
+        printf("\033[32m[INFO] Gripping Object...\033[0m\n");
         break;
     case 7:
-        printf("\033[32m[INPUT] Waiting for Place Marker ID Input (0-17):\033[0m\n");
+        printf("\033[32m[INFO] Returning to Initial Pose...\033[0m\n");
         break;
     case 8:
-        printf("\033[32m[INFO] Searching for AR Marker ID: %d for Placing...\033[0m\n", place_marker_id_);
+        printf("\033[32m[INPUT] Waiting for Place Marker ID Input (0-17):\033[0m\n");
         break;
     case 9:
-        printf("\033[32m[INFO] Releasing Object (Opening Gripper)...\033[0m\n");
+        printf("\033[32m[INFO] Searching for AR Marker ID: %d for Placing...\033[0m\n", place_marker_id_);
         break;
     case 10:
-        printf("\033[32m[INFO] Moving Up After Placing the Object...\033[0m\n");
+        printf("\033[32m[INFO] Moviing for AR Marker ID: %d for Placing...\033[0m\n", place_marker_id_);
         break;
     case 11:
-        printf("\033[32m[CHOICE] Press 'p' to Pick Another Object or 'd' to End Demo:\033[0m\n");
+        printf("\033[32m[INFO] Releasing Object (Opening Gripper)...\033[0m\n");
         break;
     case 12:
-        printf("\033[32m[INFO] Moving to Pose I...\033[0m\n");
+        printf("\033[32m[INFO] Moving Up After Placing the Object...\033[0m\n");
         break;
     case 13:
-        printf("\033[32m[INFO] I\033[0m\n");
+        printf("\033[32m[CHOICE] Press 'p' to Pick Another Object or 'd' to End Demo:\033[0m\n");
         break;
     case 14:
-        printf("\033[32m[INFO] Moving to Pose R...\033[0m\n");
+        printf("\033[32m[INFO] Moving to Pose I...\033[0m\n");
         break;
     case 15:
-        printf("\033[32m[INFO] R\033[0m\n");
+        printf("\033[32m[INFO] I\033[0m\n");
         break;
     case 16:
-        printf("\033[32m[INFO] Moving to Pose A...\033[0m\n");
+        printf("\033[32m[INFO] Moving to Pose R...\033[0m\n");
         break;
     case 17:
-        printf("\033[32m[[INFO] Moving to Pose A...\033[0m\n");
+        printf("\033[32m[INFO] R\033[0m\n");
         break;
     case 18:
-        printf("\033[32mA\033[0m\n");
+        printf("\033[32m[INFO] Moving to Pose A...\033[0m\n");
         break;
     case 19:
-        printf("\033[32m[INFO] Moving to Pose S...\033[0m\n");
+        printf("\033[32m[[INFO] Moving to Pose A...\033[0m\n");
         break;
     case 20:
-        printf("\033[32mS\033[0m\n");
+        printf("\033[32mA\033[0m\n");
         break;
     case 21:
-        printf("\033[32m[INFO] Moving to Pose C...\033[0m\n");
+        printf("\033[32m[INFO] Moving to Pose S...\033[0m\n");
         break;
     case 22:
-        printf("\033[32mC\033[0m\n");
+        printf("\033[32mS\033[0m\n");
         break;
     case 23:
+        printf("\033[32m[INFO] Moving to Pose C...\033[0m\n");
+        break;
+    case 24:
+        printf("\033[32mC\033[0m\n");
+        break;
+    case 25:
         printf("\033[32m[INFO] Finalizing Demo. Returning to Start Position...\033[0m\n");
         break;
     default:
