@@ -105,6 +105,7 @@ class OpenManipulatorPickandPlace
   void publishCallback(const ros::TimerEvent&);
   void setModeState(char ch);
   void demoSequence();
+  bool marker_found_ = false;
 
 
   void printText();
