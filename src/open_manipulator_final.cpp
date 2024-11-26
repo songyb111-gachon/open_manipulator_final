@@ -761,45 +761,35 @@ case 10: // 감지한 위치에 물체 배치
     break;
 
 
-case 12:
-    if (ar_marker_pose.empty())
+case 12: // Move up while keeping current X, Y
+    std::cout << "[DEBUG] Entering case 12: Adjusting Z value only..." << std::endl;
+
+    kinematics_position.clear();
+    kinematics_orientation.clear();
+
+    // 현재 위치 정보를 기반으로 Z값만 수정
+    kinematics_position.push_back(present_kinematic_position_.at(0)); // X 유지
+    kinematics_position.push_back(present_kinematic_position_.at(1)); // Y 유지
+    kinematics_position.push_back(0.180); // Z 값을 새로운 높이로 설정
+
+    // Orientation 유지
+    kinematics_orientation.push_back(0.74);
+    kinematics_orientation.push_back(0.00);
+    kinematics_orientation.push_back(0.66);
+    kinematics_orientation.push_back(0.00);
+
+    // 작업 공간 경로 호출
+    if (setTaskSpacePath(kinematics_position, kinematics_orientation, 2.0))
     {
-        std::cerr << "[ERROR] No AR markers detected in case 12." << std::endl;
-        demo_count_ = 13; // 실패 시 다음 단계로 강제 이동
-        break;
+        std::cout << "[DEBUG] Successfully moved up in Z direction." << std::endl;
+        demo_count_++; // 다음 단계로 진행
     }
-
-    for (size_t i = 0; i < ar_marker_pose.size(); i++)
+    else
     {
-        if (ar_marker_pose.at(i).id == place_marker_id_)
-        {
-            std::cout << "[DEBUG] Found marker ID: " << place_marker_id_ << std::endl;
-            kinematics_position.clear();
-            kinematics_orientation.clear();
-
-            kinematics_position.push_back(ar_marker_pose.at(i).position[0]);
-            kinematics_position.push_back(ar_marker_pose.at(i).position[1]);
-            kinematics_position.push_back(0.180);
-
-            kinematics_orientation.push_back(0.74);
-            kinematics_orientation.push_back(0.00);
-            kinematics_orientation.push_back(0.66);
-            kinematics_orientation.push_back(0.00);
-
-            if (setTaskSpacePath(kinematics_position, kinematics_orientation, 2.0))
-            {
-                std::cout << "[DEBUG] Successfully moved up." << std::endl;
-                demo_count_++;
-            }
-            else
-            {
-                std::cerr << "[ERROR] Failed to move up in case 12." << std::endl;
-            }
-            break;
-        }
+        std::cerr << "[ERROR] Failed to execute task space path in case 12." << std::endl;
+        demo_count_++; // 실패해도 다음 단계로 진행
     }
-
-    break; // break 누락 방지
+    break; // 다음 case로 넘어가도록 break 유지
 
 
 case 13: // Prompt user to decide next action
