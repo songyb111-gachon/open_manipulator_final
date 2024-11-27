@@ -18,7 +18,7 @@
  * - User input is used to specify the AR markers for the robotic arm to pick and place.
  *
  * Usage:
- * 1. Clone the repository: `git clone https://github.com/songyb111-gachon/open_manipulator_final`
+ * 1. Clone the repository: `git clone https://github.com/songyb111-gachon/open_manipulator_final.git`
  * 2. Build the project: catkin build
  * 3. Run the node: `rosrun open_manipulator_final open_manipulator_final.launch`.
  *
