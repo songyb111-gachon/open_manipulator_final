@@ -416,8 +416,7 @@ case 4: // pick the box 사용자가 입력한 번호의 마커를 감지
 
         // 탐색 시작
         ros::Time detection_start_time = ros::Time::now(); // 탐색 시작 시간
-        ros::Duration detection_duration(3.0);  // 감지 시도 시간을 3
-3초로 설정
+        ros::Duration detection_duration(3.0);  // 감지 시도 시간을 3초로 설정
 
         std::cout << "[DEBUG] Attempt " << search_attempts << ": Searching for Marker ID " << pick_marker_id_ << std::endl;
 
