@@ -400,11 +400,11 @@ case 4: // pick the box 사용자가 입력한 번호의 마커를 감지
 
         // 베이스 조인트 조정
         std::vector<double> search_joint_angle = {-1.60 + 0.6 * search_attempts, -0.80, 0.00, 1.90};
-        setJointSpacePath(joint_name_, search_joint_angle, 1.0);
+        setJointSpacePath(joint_name_, search_joint_angle, 2.0);
 
         // 루프를 활용한 대기
         ros::Time start_time = ros::Time::now();
-        ros::Duration wait_duration(1.0); // 이동 대기 시간: 1초
+        ros::Duration wait_duration(2.0); // 이동 대기 시간: 2초
 
         while (ros::Time::now() - start_time < wait_duration)
         {
@@ -664,11 +664,11 @@ case 10: // place the box 사용자가 입력한 마커가 있는 곳에 감지�
 
         // 베이스 조인트 조정
         std::vector<double> search_joint_angle = {-1.60 + 0.6 * search_attempts, -0.80, 0.00, 1.90};
-        setJointSpacePath(joint_name_, search_joint_angle, 1.0);
+        setJointSpacePath(joint_name_, search_joint_angle, 2.0);
 
         // 이동 완료를 루프를 통해 대기
         ros::Time start_time = ros::Time::now();
-        ros::Duration wait_duration(1.0); // 이동 대기 시간: 1초
+        ros::Duration wait_duration(2.0); // 이동 대기 시간: 2초
 
         while (ros::Time::now() - start_time < wait_duration)
         {
