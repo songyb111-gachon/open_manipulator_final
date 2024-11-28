@@ -1016,11 +1016,11 @@ void OpenManipulatorPickandPlace::printText()
 
     // 헤더 출력
     printf("\n");
-    printf("\033[32m-----------------------------\n"); // 초록색 시작
-    printf("HelloTello Final Demonstration!\n");
+    printf("-----------------------------\n");
+    printf("\033[32mHelloTello Final Demonstration!\n"); // 초록색 시작
     printf("Drones and Robotics\n");
-    printf("Andrew Jaeyong Choi Prof.\n");
-    printf("-----------------------------\033[0m\n"); // 초록색 끝
+    printf("Andrew Jaeyong Choi Prof.\033[0m\n"); // 초록색 끝
+    printf("-----------------------------\n");
 
     printf("q : Home Pose\n");
     printf("w : Start Pick and Place Demo\n");
