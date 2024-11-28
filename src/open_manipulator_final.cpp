@@ -4,7 +4,7 @@
  * Description: This code is developed for the final demonstration of
  *              OpenManipulator Pick and Place functionality with AR marker tracking.
  *              The code recognizes AR markers based on user input for picking and placing tasks.
- * Date: [2024-11-23 ~ 2024-11-26]
+ * Date: [2024-11-23 ~ 2024-11-28]
  *
  * Note: This code is part of the Drones and Robotics team project under the supervision
  *       of Prof. Andrew Jaeyong Choi at Gachon University.
@@ -20,7 +20,7 @@
  * Usage:
  * 1. Clone the repository: `git clone https://github.com/songyb111-gachon/open_manipulator_final`
  * 2. Build the project: catkin build
- * 3. Run the node: `rosrun open_manipulator_final open_manipulator_final`.
+ * 3. Run the node: `rosrun open_manipulator_final open_manipulator_final.launch`.
  *
  * Disclaimer:
  * This code is for educational purposes as part of the team project. Use it with caution in real-world environments.
@@ -296,78 +296,84 @@ void OpenManipulatorPickandPlace::demoSequence()
     break;
 
 
-      case 3: // Request Pick Marker ID
-      {
-          // 버퍼 초기화
-          output_buffer_.str(""); // 버퍼 내용 비우기
-          output_buffer_.clear();
+case 3: // Request Pick Marker ID
+{
+    // 버퍼 초기화
+    output_buffer_.str(""); // 버퍼 내용 비우기
+    output_buffer_.clear();
 
-          // 메시지 출력
-          output_buffer_ << "\n[INFO] Enter Pick Marker ID (0-17): ";
-          std::cout << output_buffer_.str() << std::flush; // 즉시 출력
+    // 메시지 출력
+    output_buffer_ << "\n[INFO] Enter Pick Marker ID (0-17): ";
+    std::cout << output_buffer_.str() << std::flush; // 즉시 출력
 
-          char first_input = '\0';
-          char second_input = '\0';
-          int marker_id = -1; // 초기화된 ID 값
+    char first_input = '\0';
+    char second_input = '\0';
+    int marker_id = -1; // 초기화된 ID 값
 
-          while (true) // 유효한 입력을 받을 때까지 반복
-          {
-              if (kbhit()) // 키 입력 대기
-              {
-                  first_input = std::getchar(); // 첫 번째 입력
-                  if (isdigit(first_input)) // 첫 번째 입력이 숫자인지 확인
-                  {
-                      clock_t start_time = clock(); // 두 번째 입력 대기 시간 측정
-                      while ((clock() - start_time) / CLOCKS_PER_SEC < INPUT_WAIT_TIME)
-                      {
-                          if (kbhit()) // 두 번째 입력 대기
-                          {
-                              second_input = std::getchar(); // 두 번째 입력
-                              if (isdigit(second_input)) // 두 번째 입력이 숫자인지 확인
-                              {
-                                  marker_id = (first_input - '0') * 10 + (second_input - '0'); // 두 글자 조합
-                                  break;
-                              }
-                          }
-                      }
-                      if (second_input == '\0') // 두 번째 입력이 없으면 한 글자만 사용
-                      {
-                          marker_id = first_input - '0';
-                      }
+    while (true) // 유효한 입력을 받을 때까지 반복
+    {
+        if (kbhit()) // 키 입력 대기
+        {
+            first_input = std::getchar(); // 첫 번째 입력
+            if (isdigit(first_input)) // 첫 번째 입력이 숫자인지 확인
+            {
+                clock_t start_time = clock(); // 두 번째 입력 대기 시간 측정
+                while ((clock() - start_time) / CLOCKS_PER_SEC < INPUT_WAIT_TIME)
+                {
+                    if (kbhit()) // 두 번째 입력 대기
+                    {
+                        second_input = std::getchar(); // 두 번째 입력
+                        if (isdigit(second_input)) // 두 번째 입력이 숫자인지 확인
+                        {
+                            marker_id = (first_input - '0') * 10 + (second_input - '0'); // 두 글자 조합
+                            break;
+                        }
+                    }
+                }
+                if (second_input == '\0') // 두 번째 입력이 없으면 한 글자만 사용
+                {
+                    marker_id = first_input - '0';
+                }
 
-                      if (marker_id >= 0 && marker_id <= 17) // 유효한 범위 확인
-                      {
-                          // 버퍼 초기화 후 메시지 작성
-                          output_buffer_.str(""); // 버퍼 내용 비우기
-                          output_buffer_.clear();
-                          pick_marker_id_ = marker_id;
-                          output_buffer_ << "[INFO] Pick Marker ID set to: " << pick_marker_id_ << "\n";
-                          std::cout << output_buffer_.str() << std::flush; // 즉시 출력
-                          demo_count_++; // 다음 단계로 이동
-                          break;
-                      }
-                      else
-                      {
-                          // 잘못된 입력 처리
-                          output_buffer_.str(""); // 버퍼 내용 비우기
-                          output_buffer_.clear();
-                          output_buffer_ << "[WARNING] Invalid input. Please enter a number between 0 and 17.\n";
-                          std::cout << output_buffer_.str() << std::flush; // 즉시 출력
-                      }
-                  }
-                  else
-                  {
-                      // 잘못된 첫 번째 입력 처리
-                      output_buffer_.str(""); // 버퍼 내용 비우기
-                      output_buffer_.clear();
-                      output_buffer_ << "[WARNING] Invalid input. Please enter a number between 0 and 17.\n";
-                      std::cout << output_buffer_.str() << std::flush; // 즉시 출력
-                  }
-              }
-              ros::Duration(0.1).sleep(); // ROS 노드가 응답을 유지하도록 100ms 대기
-          }
-          break;
-      }
+                if (marker_id >= 0 && marker_id <= 17) // 유효한 범위 확인
+                {
+                    // 버퍼 초기화 후 메시지 작성
+                    output_buffer_.str(""); // 버퍼 내용 비우기
+                    output_buffer_.clear();
+                    pick_marker_id_ = marker_id;
+                    output_buffer_ << "[INFO] Pick Marker ID set to: " << pick_marker_id_ << "\n";
+                    std::cout << output_buffer_.str() << std::flush; // 즉시 출력
+                    demo_count_++; // 다음 단계로 이동
+                    break;
+                }
+                else
+                {
+                    // 잘못된 입력 처리
+                    output_buffer_.str(""); // 버퍼 내용 비우기
+                    output_buffer_.clear();
+                    output_buffer_ << "[WARNING] Invalid input. Please enter a number between 0 and 17.\n";
+                    std::cout << output_buffer_.str() << std::flush; // 즉시 출력
+
+                    // 입력 버퍼 비우기
+                    while (kbhit()) std::getchar();
+                }
+            }
+            else
+            {
+                // 잘못된 첫 번째 입력 처리
+                output_buffer_.str(""); // 버퍼 내용 비우기
+                output_buffer_.clear();
+                output_buffer_ << "[WARNING] Invalid input. Please enter a number between 0 and 17.\n";
+                std::cout << output_buffer_.str() << std::flush; // 즉시 출력
+
+                // 입력 버퍼 비우기
+                while (kbhit()) std::getchar();
+            }
+        }
+        ros::Duration(0.1).sleep(); // ROS 노드가 응답을 유지하도록 100ms 대기
+    }
+    break;
+}
 
 
 case 4: // pick the box 사용자가 입력한 번호의 마커를 감지
@@ -610,6 +616,9 @@ case 9: // Request Place Marker ID
                     output_buffer_.clear();
                     output_buffer_ << "[WARNING] Invalid input. Please enter a number between 0 and 17.\n";
                     std::cout << output_buffer_.str() << std::flush; // 즉시 출력
+
+                    // 입력 버퍼 비우기
+                    while (kbhit()) std::getchar();
                 }
             }
             else
@@ -619,6 +628,9 @@ case 9: // Request Place Marker ID
                 output_buffer_.clear();
                 output_buffer_ << "[WARNING] Invalid input. Please enter a number between 0 and 17.\n";
                 std::cout << output_buffer_.str() << std::flush; // 즉시 출력
+
+                // 입력 버퍼 비우기
+                while (kbhit()) std::getchar();
             }
         }
         ros::spinOnce(); // ROS 콜백 처리
@@ -842,11 +854,14 @@ case 14: // Prompt user to decide next action
             }
             else
             {
-                // 경고 메시지 출력
+                // 잘못된 입력 처리
                 output_buffer_.str("");
                 output_buffer_.clear();
                 output_buffer_ << "[WARNING] Invalid input. Please press 'p' or 'd'.\n";
                 std::cout << output_buffer_.str() << std::flush; // 즉시 출력
+
+                // 입력 버퍼 비우기
+                while (kbhit()) std::getchar();
             }
         }
         ros::Duration(0.1).sleep(); // ROS 노드가 응답을 유지하도록 100ms 대기
@@ -909,8 +924,8 @@ case 15: // initial pose
     case 20: //임시
     joint_angle.clear();
     joint_angle.push_back( -0.015);
-    joint_angle.push_back( -0.100);
-    joint_angle.push_back( 0.579);
+    joint_angle.push_back( -0.300);
+    joint_angle.push_back( 0.779);
     joint_angle.push_back( 1.759);
     setJointSpacePath(joint_name_, joint_angle, 1);
     demo_count_++;
@@ -1001,9 +1016,9 @@ void OpenManipulatorPickandPlace::printText()
 
     printf("\n");
     printf("-----------------------------\n");
-    printf("HelloTello Final Demonstration!\n");
+    printf("\033[32mHelloTello Final Demonstration!\n");
     printf("Drones and Robotics\n");
-    printf("Andrew Jaeyong Choi Prof.\n");
+    printf("Andrew Jaeyong Choi Prof.\033[0m\n");
     printf("-----------------------------\n");
 
     printf("q : Home Pose\n");
