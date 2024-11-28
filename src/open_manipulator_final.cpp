@@ -388,7 +388,7 @@ case 4: // pick the box 사용자가 입력한 번호의 마커를 감지
     bool marker_found = false;
     int search_attempts = 0;
 
-    while (!marker_found && search_attempts < 6) // 최대 6번 시도
+    while (!marker_found && search_attempts < 9) // 최대 6번 시도
     {
         // 탐색 동작 수행 메시지 출력
         output_buffer_.str("");
@@ -399,7 +399,7 @@ case 4: // pick the box 사용자가 입력한 번호의 마커를 감지
         std::cout << output_buffer_.str() << std::flush; // 즉시 출력
 
         // 베이스 조인트 조정
-        std::vector<double> search_joint_angle = {-1.60 + 0.6 * search_attempts, -0.80, 0.00, 1.90};
+        std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
         setJointSpacePath(joint_name_, search_joint_angle, 2.0);
 
         // 루프를 활용한 대기
@@ -652,7 +652,7 @@ case 10: // place the box 사용자가 입력한 마커가 있는 곳에 감지�
     bool marker_found = false;
     int search_attempts = 0;
 
-    while (!marker_found && search_attempts < 6) // 최대 6번 시도
+    while (!marker_found && search_attempts < 9) // 최대 9번 시도
     {
         // 탐색 동작 수행 메시지 출력
         output_buffer_.str("");
@@ -663,7 +663,7 @@ case 10: // place the box 사용자가 입력한 마커가 있는 곳에 감지�
         std::cout << output_buffer_.str() << std::flush; // 즉시 출력
 
         // 베이스 조인트 조정
-        std::vector<double> search_joint_angle = {-1.60 + 0.6 * search_attempts, -0.80, 0.00, 1.90};
+        std::vector<double> search_joint_angle = {-1.60 + 0.4 * search_attempts, -0.80, 0.00, 1.90};
         setJointSpacePath(joint_name_, search_joint_angle, 2.0);
 
         // 이동 완료를 루프를 통해 대기
@@ -684,7 +684,7 @@ case 10: // place the box 사용자가 입력한 마커가 있는 곳에 감지�
 
         std::cout << "[DEBUG] Attempt " << search_attempts << ": Searching for Marker ID " << place_marker_id_ << std::endl;
 
-        while (ros::Time::now() - detection_start_time < detection_duration) // 6초 동안 감지 반복
+        while (ros::Time::now() - detection_start_time < detection_duration) // 3초 동안 감지 반복
         {
             ros::spinOnce(); // 콜백 강제 실행
 
