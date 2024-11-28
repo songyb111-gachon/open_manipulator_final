@@ -1164,32 +1164,6 @@ if (mode_state_ == DEMO_START)
     // demoSequence()의 출력 추가
     if (!output_buffer_.str().empty())
     {
-    printf("-----------------------------\n");
-    printf("Present Joint Angles: J1: %.3lf J2: %.3lf J3: %.3lf J4: %.3lf\n",
-           present_joint_angle_.at(0),
-           present_joint_angle_.at(1),
-           present_joint_angle_.at(2),
-           present_joint_angle_.at(3));
-
-    printf("Present Tool Position: %.3lf\n", present_joint_angle_.at(4));
-    printf("Present Kinematics Position X: %.3lf Y: %.3lf Z: %.3lf\n",
-           present_kinematic_position_.at(0),
-           present_kinematic_position_.at(1),
-           present_kinematic_position_.at(2));
-
-    if (!ar_marker_pose.empty())
-    {
-        printf("Detected AR Markers:\n");
-        for (const auto &marker : ar_marker_pose)
-        {
-            printf("ID: %d --> X: %.3lf\tY: %.3lf\tZ: %.3lf\n",
-                   marker.id,
-                   marker.position[0],
-                   marker.position[1],
-                   marker.position[2]);
-        }
-    }
-
         printf("\033[32m\n--- DemoSequence Output ---\033[0m\n"); // 초록색으로 출력
         printf("\033[32m%s\033[0m", output_buffer_.str().c_str()); // 초록색으로 출력
         output_buffer_.str("");  // 버퍼 초기화
